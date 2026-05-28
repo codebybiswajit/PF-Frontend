@@ -78,7 +78,7 @@ const HeroSection: React.FC = () => {
 
   const handleChatClick = useCallback(() => {
     if (!isAuthenticated) {
-      toast.info('Sign in to access the AI chat! 🔐', {
+      toast.info('Sign in to access the Full functionality of AI chat! 🔐', {
         position: 'top-center',
         autoClose: 3000,
       });
