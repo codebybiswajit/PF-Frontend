@@ -26,23 +26,23 @@ type ModelStatus =
 /* ── Constants ─────────────────────────────────────────────────── */
 const MODEL_ID = 'Phi-3.5-mini-instruct-q4f16_1-MLC';
 
-const SYSTEM_PROMPT = `You are Alex Johnson's AI portfolio assistant. Alex is a Full Stack Developer & Data Engineer specializing in React, Node.js, Python, and data engineering.
+const SYSTEM_PROMPT = `You are Biswajit Mohapatra's AI portfolio assistant. Biswajit is a Full Stack Developer & Data Engineer specializing in React, Node.js, Python, and data engineering.
 
 His 3 major projects:
 1. E-Commerce Platform (React, Node.js, PostgreSQL, Stripe, Redis) - full shopping experience with auth, cart, payments
 2. Hospital Management System (Django, React, MySQL, Docker) - HIPAA-compliant EHR with scheduling, billing, staff mgmt
 3. Python Web Scraping Engine (Scrapy, Selenium, Kafka, MongoDB) - distributed scraping with proxy rotation, data pipeline
 
-This portfolio website was founded by Alex Johnson. It allows users to: browse Alex's projects, generate their own ATS-friendly resume by registering, and chat with AI.
+This portfolio website was founded by Biswajit Mohapatra. It allows users to: browse Biswajit's projects, generate their own ATS-friendly resume by registering, and chat with AI.
 
 Personality: helpful, casual but professional, technically precise, warm. Keep responses concise (2-4 sentences usually) unless detail is needed. Use occasional light humor. Use markdown formatting for lists.`;
 
 const GUEST_FALLBACK = `Great question! Sign up or log in to chat with our full AI assistant for more personalized answers. Here's what I can help with as a guest:
 
-• **Who is the founder?** — Ask about Alex Johnson
+• **Who is the founder?** — Ask about Biswajit Mohapatra
 • **What can this site do?** — Features & capabilities
 • **Tell me about the projects** — E-Commerce, Hospital, Scraper
-• **What tech stack?** — Alex's skills & technologies
+• **What tech stack?** — Biswajit's skills & technologies
 • **Resume / CV info** — How the resume generator works
 
 Feel free to try one of the quick buttons above! 🚀`;
@@ -112,8 +112,8 @@ const ChatPage: React.FC = () => {
     {
       role: 'assistant',
       content: isAuthenticated
-        ? `Hey ${'firstName' in (user ?? {}) ? (user as { firstName?: string }).firstName ?? 'there' : 'there'}! 👋 I'm Alex's AI assistant, powered by a local LLM running right in your browser. Ask me anything about the portfolio, Alex's projects, or tech stack!`
-        : `Hey there! 👋 I'm Alex's AI assistant. I'm running in **Guest Mode** — I can answer common questions about this portfolio instantly. For full AI conversations, sign up or log in!`,
+        ? `Hey ${'firstName' in (user ?? {}) ? (user as { firstName?: string }).firstName ?? 'there' : 'there'}! 👋 I'm Biswajit's AI assistant, powered by a local LLM running right in your browser. Ask me anything about the portfolio, Biswajit's projects, or tech stack!`
+        : `Hey there! 👋 I'm Biswajit's AI assistant. I'm running in **Guest Mode** — I can answer common questions about this portfolio instantly. For full AI conversations, sign up or log in!`,
     },
   ]);
 
@@ -190,13 +190,13 @@ const ChatPage: React.FC = () => {
   /* ── Human-readable status label ─────────────────────────────── */
   const statusLabel = (): string => {
     switch (modelStatus) {
-      case 'idle':         return '● Idle';
+      case 'idle': return '● Idle';
       case 'initializing': return '● Initializing...';
-      case 'loading':      return `● Loading model ${loadProgress.toFixed(0)}%...`;
-      case 'ready':        return '● Ready';
-      case 'error':        return '● Error';
-      case 'guest':        return '● Guest Mode';
-      default:             return '● Unknown';
+      case 'loading': return `● Loading model ${loadProgress.toFixed(0)}%...`;
+      case 'ready': return '● Ready';
+      case 'error': return '● Error';
+      case 'guest': return '● Guest Mode';
+      default: return '● Unknown';
     }
   };
 
@@ -444,7 +444,7 @@ const ChatPage: React.FC = () => {
             className={`msg ${msg.role === 'user' ? 'user' : 'bot'}`}
           >
             {msg.role === 'assistant' && (
-              <div className="bot-name">ALEX-AI</div>
+              <div className="bot-name">BM-AI</div>
             )}
             <div>{renderMarkdown(msg.content)}</div>
           </div>
@@ -453,7 +453,7 @@ const ChatPage: React.FC = () => {
         {/* Thinking / loading dots */}
         {thinking && (
           <div className="msg bot">
-            <div className="bot-name">ALEX-AI</div>
+            <div className="bot-name">BM-AI</div>
             <div className="thinking">
               <span />
               <span />
@@ -473,8 +473,8 @@ const ChatPage: React.FC = () => {
           type="text"
           placeholder={
             isAuthenticated
-              ? 'Ask anything about Alex or the portfolio…'
-              : "Ask about Alex's portfolio (Guest Mode)…"
+              ? 'Ask anything about Biswajit or the portfolio…'
+              : "Ask about Biswajit's portfolio (Guest Mode)…"
           }
           value={input}
           onChange={(e) => setInput(e.target.value)}

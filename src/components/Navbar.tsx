@@ -41,7 +41,7 @@ const Navbar: React.FC = () => {
       <div className="container-fluid px-4">
         {/* Logo */}
         <NavLink to="/" className="navbar-brand pf-logo" onClick={closeNav}>
-          AJ.DEV
+          BM.DEV
         </NavLink>
 
         {/* Hamburger */}
@@ -85,16 +85,15 @@ const Navbar: React.FC = () => {
                 About
               </NavLink>
             </li>
-            {/* Resume — protected */}
-            <li className="nav-item">
-              <a
-                href="/resume"
-                className={`nav-link pf-nav-link${!isAuthenticated ? ' text-muted' : ''}`}
-                onClick={e => handleProtectedLink(e, '/resume')}
+            {!isAuthenticated && <li className="nav-item">
+              <NavLink
+                to="/my-resume"
+                className={({ isActive }) => `nav-link pf-nav-link${isActive ? ' active' : ''}`}
+                onClick={closeNav}
               >
-                {!isAuthenticated && <span className="me-1">🔒</span>}Resume
-              </a>
-            </li>
+                Resume
+              </NavLink>
+            </li>}
             {/* AI Chat — accessible but limited for guests */}
             <li className="nav-item">
               <NavLink
@@ -102,7 +101,7 @@ const Navbar: React.FC = () => {
                 className={({ isActive }) => `nav-link pf-nav-link${isActive ? ' active' : ''}`}
                 onClick={closeNav}
               >
-                AI Chat
+                AI Chat <span className="badge" >Beta</span>
               </NavLink>
             </li>
           </ul>
@@ -124,6 +123,16 @@ const Navbar: React.FC = () => {
               </>
             ) : (
               <>
+                {/* Resume — protected */}
+                <div className="nav-item">
+                  <a
+                    href="/resume"
+                    className={`nav-link pf-nav-link${!isAuthenticated ? ' text-muted' : ''}`}
+                    onClick={e => handleProtectedLink(e, '/resume')}
+                  >
+                    {!isAuthenticated && <span className="me-1">🔒</span>}Your Resume
+                  </a>
+                </div>
                 <button
                   className="btn-neon"
                   onClick={() => { closeNav(); navigate('/signin'); }}

@@ -28,8 +28,8 @@ export const authApi = {
   },
 
   me: async (): Promise<User> => {
-    const res = await api.get<User>('/auth/me');
-    return res.data;
+    const res = await api.get<{ user: User }>('/auth/me');
+    return res.data.user;
   },
 
   updateProfile: async (id: string, data: Partial<User>): Promise<User> => {

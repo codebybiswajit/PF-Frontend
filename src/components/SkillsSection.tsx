@@ -46,7 +46,7 @@ const SkillBar: React.FC<{ skill: Skill; animate: boolean }> = ({ skill, animate
     <div className="skill-item mb-3">
       <div className="d-flex justify-content-between align-items-center mb-1">
         <span className="skill-name">{skill.name}</span>
-        <span className="skill-pct">{skill.level}%</span>
+        {/* <span className="skill-pct">{skill.level}%</span> */}
       </div>
       <div className="skill-bar">
         <div

@@ -7,8 +7,8 @@ import { SITE_INFO } from '../data/portfolioData';
 
 const TYPING_PHRASES = [
   'Full Stack Developer',
-  'Data Engineer',
-  'React Expert',
+  'React Developer',
+  'Typescript Developer',
   'Python Developer',
 ];
 
@@ -113,7 +113,7 @@ const HeroSection: React.FC = () => {
               animate="visible"
               custom={0.15}
             >
-              ALEX<br />JOHNSON
+              Biswajit<br />Mohapatra
             </motion.h1>
 
             {/* Typing subtitle */}
