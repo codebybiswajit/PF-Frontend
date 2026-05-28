@@ -13,6 +13,9 @@ export default defineConfig({
       }
     }
   },
+  preview: {
+    allowedHosts: ['biswajit-mohapatra-portfolio.onrender.com']
+  },
   optimizeDeps: {
     exclude: ['@mlc-ai/web-llm']
   }
