@@ -70,8 +70,8 @@ const HeroSection: React.FC = () => {
         position: 'top-center',
         autoClose: 3000,
       });
-      navigate('/signin');
-    } else {
+      navigate('/my-resume');
+    } if (isAuthenticated) {
       navigate('/resume');
     }
   }, [isAuthenticated, navigate]);
@@ -82,7 +82,7 @@ const HeroSection: React.FC = () => {
         position: 'top-center',
         autoClose: 3000,
       });
-      navigate('/signin');
+      navigate('/chat');
     } else {
       navigate('/chat');
     }
