@@ -66,7 +66,7 @@ const HeroSection: React.FC = () => {
   /* ── Handlers ── */
   const handleResumeClick = useCallback(() => {
     if (!isAuthenticated) {
-      toast.info('Please sign in or register first! 🔐', {
+      toast.info('Sign in to View your own resume! 🔐', {
         position: 'top-center',
         autoClose: 3000,
       });
@@ -78,7 +78,7 @@ const HeroSection: React.FC = () => {
 
   const handleChatClick = useCallback(() => {
     if (!isAuthenticated) {
-      toast.info('Please sign in or register first! 🔐', {
+      toast.info('Sign in to access the AI chat! 🔐', {
         position: 'top-center',
         autoClose: 3000,
       });
@@ -146,13 +146,13 @@ const HeroSection: React.FC = () => {
                 className="btn btn-pink btn-lg px-4"
                 onClick={handleResumeClick}
               >
-                {isAuthenticated ? '📄 Get My Resume' : '🔒 Get My Resume'}
+                {isAuthenticated ? '📄 Get My Resume' : '📄 Get My Resume'}
               </button>
               <button
                 className="btn btn-yellow btn-lg px-4"
                 onClick={handleChatClick}
               >
-                {isAuthenticated ? '🤖 AI Chat' : '🔒 AI Chat'}
+                {isAuthenticated ? '🤖 AI Chat' : '🤖 AI Chat'}
               </button>
             </motion.div>
 
