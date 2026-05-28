@@ -13,8 +13,8 @@ const AboutPage: React.FC = () => {
     if (user) {
       navigate('/resume');
     } else {
-      toast.info('Please sign in or register first! 🔐');
-      navigate('/signin');
+      toast.info('Please sign in or register first! to view your resume 🔐');
+      navigate('/my-resume');
     }
   };
 
@@ -44,7 +44,7 @@ const AboutPage: React.FC = () => {
 
               <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginTop: '1.5rem' }}>
                 <button className="btn-neon" onClick={handleResume}>
-                  Download Resume
+                  View Resume
                 </button>
                 <button className="btn-pink" onClick={() => navigate('/chat')}>
                   Chat With AI
