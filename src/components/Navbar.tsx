@@ -142,7 +142,6 @@ const Navbar = () => {
             aria-label="Toggle navigation"
             aria-expanded={navOpen}
             onClick={() => setNavOpen(o => !o)}
-            onBlur={() => setNavOpen(o => !o)}
           >
             <span className="navbar-toggler-icon" />
           </button>

@@ -11,6 +11,7 @@ import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
 import ChatPage from './pages/ChatPage';
 import MyResumePage from './pages/MyResumePage';
+import FoundersResumePage from './pages/FoundersResumePage';
 
 /* ── Layout wrapper ─────────────────────────────────────────────
    Renders ParticleBackground + Navbar on every route, then
@@ -50,6 +51,8 @@ const App: React.FC = () => {
           <Route path="/signin" element={<SignInPage />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/my-resume" element={<MyResumePage />} />
+          <Route path="/foundersresume" element={<FoundersResumePage />} />
+          <Route path="/founders-resume" element={<FoundersResumePage />} />
           <Route path="/chat" element={<ChatPage />} />
 
           {/* Fallback — redirect to home */}

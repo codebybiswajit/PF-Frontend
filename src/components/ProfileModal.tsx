@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 import { authApi } from '../services/api';
@@ -164,10 +165,10 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, initialTab
       };
 
       const res = await authApi.updateProfile(user._id!, updateData);
-      
+
       // Update in-memory React Auth state
       updateUser(res.user);
-      
+
       toast.success('Profile updated successfully! ✨', { autoClose: 2000 });
       onClose();
     } catch (err: any) {
@@ -207,9 +208,22 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, initialTab
   };
 
   return (
-    <div className="pf-modal-overlay" onClick={onClose}>
-      <div className="pf-modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '650px', width: '95%', display: 'flex', flexDirection: 'column', maxHeight: '90vh', overflow: 'hidden' }}>
-        
+    <motion.div
+      className="pf-modal-overlay"
+      onClick={onClose}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.25 }}
+    >
+      <motion.div
+        className="pf-modal-box"
+        onClick={(e) => e.stopPropagation()}
+        style={{ maxWidth: '850px', width: '95%', display: 'flex', flexDirection: 'column', maxHeight: '90vh', overflow: 'hidden' }}
+        initial={{ opacity: 0, scale: 0.95, y: 15 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+      >
+
         {/* Header */}
         <div className="pf-modal-header" style={{ paddingBottom: '1rem', borderBottom: '1px solid var(--border)' }}>
           <h2 className="pf-modal-title">UPDATE PROFILE</h2>
@@ -251,7 +265,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, initialTab
 
         <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', flex: '1 1 auto', overflow: 'hidden' }}>
           <div className="pf-modal-body" style={{ flex: '1 1 auto', overflowY: 'auto', paddingTop: '0' }}>
-            
+
             {/* TAB 1: BASIC INFO */}
             {activeTab === 'basic' && (
               <div>
@@ -294,20 +308,20 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, initialTab
 
                 <div className="mb-3">
                   <label className="pf-label">Custom Portfolio Handle</label>
-                  <input 
-                    className="pf-input" 
-                    value={portfolioSlug} 
-                    onChange={(e) => setPortfolioSlug(e.target.value.toLowerCase().trim().replace(/[^a-z0-9-_]/g, ''))} 
-                    placeholder="e.g. biswajit-mohapatra" 
+                  <input
+                    className="pf-input"
+                    value={portfolioSlug}
+                    onChange={(e) => setPortfolioSlug(e.target.value.toLowerCase().trim().replace(/[^a-z0-9-_]/g, ''))}
+                    placeholder="e.g. biswajit-mohapatra"
                     style={{ fontFamily: 'Share Tech Mono, monospace', width: '100%' }}
                   />
-                  
-                  <div 
-                    style={{ 
+
+                  <div
+                    style={{
                       marginTop: '0.6rem',
-                      padding: '0.75rem 1rem', 
-                      background: 'rgba(255, 255, 255, 0.02)', 
-                      border: '1px dashed var(--border)', 
+                      padding: '0.75rem 1rem',
+                      background: 'rgba(255, 255, 255, 0.02)',
+                      border: '1px dashed var(--border)',
                       borderRadius: '4px',
                       display: 'flex',
                       alignItems: 'center',
@@ -334,7 +348,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, initialTab
                       Copy Link
                     </button>
                   </div>
-                  
+
                   <small style={{ color: 'var(--muted)', fontSize: '0.75rem', display: 'block', marginTop: '0.4rem' }}>
                     Configure a custom identifier above. Share this live URL with employers or clients to let them view your dynamic portfolio without signing up!
                   </small>
@@ -350,12 +364,12 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, initialTab
                       </small>
                     </div>
                     <div className="form-check form-switch" style={{ cursor: 'not-allowed' }}>
-                      <input 
-                        className="form-check-input" 
-                        type="checkbox" 
-                        id="otpProtect" 
-                        disabled 
-                        style={{ cursor: 'not-allowed', width: '2.5em', height: '1.2em' }} 
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="otpProtect"
+                        disabled
+                        style={{ cursor: 'not-allowed', width: '2.5em', height: '1.2em' }}
                       />
                     </div>
                   </div>
@@ -490,7 +504,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, initialTab
                       </div>
                       <label className="pf-label">Description</label>
                       <textarea className="pf-textarea" style={{ minHeight: '80px' }} value={p.desc} onChange={(ev) => updateProj(p.id, 'desc', ev.target.value)} placeholder="A full-featured AI chat bot with in-memory message history..." />
-                      
+
                       <label className="pf-label" style={{ marginTop: '0.5rem' }}>Demo / Repo URL</label>
                       <input className="pf-input" value={p.url || ''} onChange={(ev) => updateProj(p.id, 'url', ev.target.value)} placeholder="github.com/username/project" />
                     </div>
@@ -502,7 +516,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, initialTab
           </div>
 
           {/* Footer Action Buttons (Step-by-Step Wizard Layout) */}
-          <div className="pf-modal-header" style={{ paddingTop: '1.25rem', paddingBottom: '1.25rem', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', borderTop: '1px solid var(--border)' }}>
+          <div style={{ padding: '1.25rem 1.5rem', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', borderTop: '1px solid var(--border)', marginTop: 'auto' }}>
             {activeTab === 'basic' && (
               <>
                 <button type="button" className="btn-secondary" style={{ padding: '0.4rem 1.2rem', textTransform: 'uppercase', fontSize: '0.85rem' }} onClick={onClose}>
@@ -544,8 +558,8 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, initialTab
           </div>
         </form>
 
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
