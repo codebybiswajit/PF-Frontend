@@ -293,18 +293,33 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, initialTab
                 </div>
 
                 <div className="mb-3">
-                  <label className="pf-label">Custom Portfolio Link</label>
-                  <div className="pf-slug-input-group mb-1">
-                    <span className="pf-slug-prefix">
-                      {window.location.origin}/portfolio/
-                    </span>
-                    <input 
-                      className="pf-input flex-grow-1" 
-                      value={portfolioSlug} 
-                      onChange={(e) => setPortfolioSlug(e.target.value.toLowerCase().trim().replace(/[^a-z0-9-_]/g, ''))} 
-                      placeholder="custom-link-handle" 
-                      style={{ fontFamily: 'Share Tech Mono, monospace' }}
-                    />
+                  <label className="pf-label">Custom Portfolio Handle</label>
+                  <input 
+                    className="pf-input" 
+                    value={portfolioSlug} 
+                    onChange={(e) => setPortfolioSlug(e.target.value.toLowerCase().trim().replace(/[^a-z0-9-_]/g, ''))} 
+                    placeholder="e.g. biswajit-mohapatra" 
+                    style={{ fontFamily: 'Share Tech Mono, monospace', width: '100%' }}
+                  />
+                  
+                  <div 
+                    style={{ 
+                      marginTop: '0.6rem',
+                      padding: '0.75rem 1rem', 
+                      background: 'rgba(255, 255, 255, 0.02)', 
+                      border: '1px dashed var(--border)', 
+                      borderRadius: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '1rem',
+                      flexWrap: 'wrap'
+                    }}
+                  >
+                    <div style={{ wordBreak: 'break-all', fontFamily: 'Share Tech Mono, monospace', fontSize: '0.85rem', color: 'var(--text)' }}>
+                      <span style={{ color: 'var(--neon)', marginRight: '0.5rem', fontWeight: 'bold' }}>🔗 LIVE URL:</span>
+                      {window.location.origin}/portfolio/<span style={{ color: portfolioSlug ? 'var(--neon2)' : 'var(--muted)', fontWeight: portfolioSlug ? 'bold' : 'normal' }}>{portfolioSlug || 'your-slug-handle'}</span>
+                    </div>
                     <button
                       type="button"
                       className="btn-neon"
@@ -314,13 +329,14 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, initialTab
                         toast.success('Portfolio link copied to clipboard! 📋');
                       }}
                       disabled={!portfolioSlug}
-                      style={{ fontSize: '0.85rem', padding: '0.6rem 1rem' }}
+                      style={{ fontSize: '0.75rem', padding: '0.35rem 0.75rem', height: 'auto' }}
                     >
                       Copy Link
                     </button>
                   </div>
-                  <small style={{ color: 'var(--muted)', fontSize: '0.75rem' }}>
-                    This is your personal deep-link handle. Anyone with this link can view your portfolio without registering!
+                  
+                  <small style={{ color: 'var(--muted)', fontSize: '0.75rem', display: 'block', marginTop: '0.4rem' }}>
+                    Configure a custom identifier above. Share this live URL with employers or clients to let them view your dynamic portfolio without signing up!
                   </small>
                 </div>
 

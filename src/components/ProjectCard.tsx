@@ -5,10 +5,9 @@ import type { PortfolioProject } from '../types';
 interface ProjectCardProps {
   project: PortfolioProject;
   onViewDetails: (project: PortfolioProject) => void;
-  onEdit?: (project: PortfolioProject) => void;
 }
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ project, onViewDetails, onEdit }) => {
+const ProjectCard: React.FC<ProjectCardProps> = ({ project, onViewDetails }) => {
   const handleViewDetails = useCallback(() => {
     onViewDetails(project);
   }, [project, onViewDetails]);
@@ -51,26 +50,20 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onViewDetails, onEdi
         {/* Action buttons */}
         <div className="proj-links d-flex justify-content-between align-items-center">
           <div>
-            <button className="proj-link me-3" onClick={handleViewDetails}>
+            <button className="proj-link" onClick={handleViewDetails}>
               View Details →
             </button>
-            {onEdit && (
-              <button
-                className="proj-link"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit(project);
-                }}
-                style={{ color: 'var(--neon3)', borderBottomColor: 'transparent', padding: 0 }}
-                type="button"
-              >
-                ✏️ Edit
-              </button>
-            )}
           </div>
-          <button className="proj-link-pink" onClick={handleViewDetails}>
-            {project.id.startsWith('user-') ? 'GitHub ↗' : 'Live Demo ↗'}
-          </button>
+          {project.url && (
+            <a 
+              href={project.url.startsWith('http') ? project.url : `https://${project.url}`} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="proj-link-pink text-decoration-none"
+            >
+              {project.id.startsWith('user-') ? 'GitHub ↗' : 'Live Demo ↗'}
+            </a>
+          )}
         </div>
       </div>
     </motion.div>

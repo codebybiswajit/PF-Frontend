@@ -60,6 +60,7 @@ export interface PortfolioProject {
   features: { title: string; body: string }[];
   tech: string[];
   stack: string;
+  url?: string;
 }
 
 export interface ResumeContact {

@@ -32,6 +32,7 @@ const ProjectsPage: React.FC = () => {
       features: [],
       tech: p.tech ? p.tech.split(',').map(t => t.trim()) : [],
       stack: p.url ? `Live: ${p.url}` : 'Source code available',
+      url: p.url,
     }));
 
   const isUserLoggedIn = !!user && !publicUser; // only show edit actions if viewing own page
@@ -98,10 +99,6 @@ const ProjectsPage: React.FC = () => {
                   <ProjectCard 
                     project={proj} 
                     onViewDetails={() => setSelectedProject(proj)} 
-                    onEdit={isUserLoggedIn ? () => {
-                      setProfileModalTab('projects');
-                      setProfileModalOpen(true);
-                    } : undefined}
                   />
                 </motion.div>
               ))}
