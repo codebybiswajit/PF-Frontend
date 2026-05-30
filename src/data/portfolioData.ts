@@ -17,7 +17,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
       { title: 'Admin Dashboard', body: 'Real-time analytics, inventory alerts, order management' },
       { title: 'Performance', body: 'Redis caching, CDN assets, lazy-loading, Lighthouse 95+' },
     ],
-    tech: ['React 18', 'Node.js', 'Express', 'PostgreSQL', 'Redis', 'Stripe API', 'Docker', 'AWS S3', 'Elasticsearch', 'JWT'],
+    tech: ['React', 'Node.js', 'Express', 'MongoDB', 'Stripe API', 'JWT'],
     stack: `GET /api/products?category=electronics&sort=price\n> 200 OK | 48ms | 124 products returned\n\nPOST /api/cart/add { productId: "px-284", qty: 2 }\n> 200 OK | Cart updated | Total: $149.98\n\nPOST /api/orders/checkout\n> 201 Created | Order #ORD-2024-8821 | Payment: ✓`,
   },
   {
@@ -28,16 +28,15 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     badge: 'ENTERPRISE',
     badgeColor: 'warning',
     bgClass: 'bg-hospital',
-    tags: ['Django', 'React', 'MySQL', 'Docker', 'REST API'],
+    tags: ['React', 'MongoDB', 'REST API'],
     features: [
       { title: 'Patient Records', body: 'Complete EHR system with medical history, diagnoses, prescriptions' },
       { title: 'Appointments', body: 'Smart scheduling with conflict detection, doctor availability, reminders' },
       { title: 'Billing & Insurance', body: 'Automated billing, insurance claim processing, payment tracking' },
       { title: 'Lab Integration', body: 'Lab result uploads, test ordering, and result notifications' },
       { title: 'Staff Management', body: 'Roles, shifts, attendance tracking for doctors/nurses/admin' },
-      { title: 'HIPAA Compliance', body: 'End-to-end encryption, audit logs, access controls' },
     ],
-    tech: ['Django', 'Django REST', 'React', 'MySQL', 'Celery', 'Redis', 'Docker', 'WebSockets', 'PDF generation', 'HIPAA'],
+    tech: ['React', 'MongoDB', 'WebSockets', 'PDF generation'],
     stack: `Patient: John Doe | DOB: 1980-03-15 | ID: PAT-4821\nDiagnosis: Hypertension (ICD-10: I10)\nPrescribed: Lisinopril 10mg | Dr. Smith\n\nAppointment: 2024-01-20 10:30 AM ✓ Confirmed\nBilling: $250.00 | Insurance: $200 | Patient: $50`,
   },
   {
@@ -48,16 +47,15 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     badge: 'PYTHON',
     badgeColor: 'pink',
     bgClass: 'bg-scraper',
-    tags: ['Python', 'Scrapy', 'Selenium', 'Kafka', 'MongoDB'],
+    tags: ['Python', 'Selenium', 'MongoDB'],
     features: [
       { title: 'Distributed Crawling', body: 'Multi-node Scrapy cluster with Kafka queue and Redis deduplication' },
       { title: 'Anti-Detection', body: 'Proxy rotation, user-agent spoofing, request throttling, header randomization' },
       { title: 'CAPTCHA Handling', body: '2Captcha API integration with fallback Selenium for JS-heavy pages' },
-      { title: 'Data Pipeline', body: 'Scrapy pipelines → Kafka → MongoDB with schema validation' },
       { title: 'Monitoring', body: 'Real-time dashboard: crawl speed, success rate, proxy health' },
       { title: 'Scheduling', body: 'Cron-based scheduling, priority queues, domain rate limiting' },
     ],
-    tech: ['Python 3.11', 'Scrapy', 'Selenium', 'Playwright', 'Kafka', 'MongoDB', 'Redis', 'Docker', 'Grafana', 'BeautifulSoup'],
+    tech: ['Python 3.11', 'Selenium', 'Playwright', 'MongoDB', 'BeautifulSoup'],
     stack: `[CRAWLER] Starting job: ecommerce_prices\nProxies: 145 active | Rotating every 50 requests\nQueue: 12,480 URLs | Speed: 340 req/min\n\n✓ Extracted: 8,240 products | 2.1s avg\n✓ Stored → MongoDB: prices_2024_01\nPipeline: Validated → Deduplicated → Saved`,
   },
 ];
@@ -72,7 +70,7 @@ export const SITE_INFO = {
   bio2: `My three flagship projects span e-commerce, healthcare, and data engineering — each built to production standards with real-world constraints in mind.`,
   stats: [
     { num: '3+', label: 'Major Projects' },
-    { num: '5+', label: 'Years Coding' },
+    { num: '1.5+', label: 'Years Coding' },
     { num: '15+', label: 'Technologies' },
     { num: '100%', label: 'Passion' },
   ],
@@ -80,7 +78,7 @@ export const SITE_INFO = {
 
 export const PUBLIC_CHAT_QA: { patterns: string[]; answer: string }[] = [
   {
-    patterns: ['who is founder', 'founder', 'who made', 'who created', 'who built', 'owner'],
+    patterns: ['founder', 'founder', 'who made you', 'who created you', 'who built', 'owner'],
     answer: `The founder of this website is **Biswajit Mohapatra** — a Full Stack Developer & Data Engineer with expertise in React, Node.js, Python, and data pipelines. Biswajit built this portfolio platform to showcase his work and allow others to generate their own ATS-friendly resumes!`,
   },
   {
@@ -109,85 +107,78 @@ export const PUBLIC_CHAT_QA: { patterns: string[]; answer: string }[] = [
   },
 ];
 
-/* ═══════════════════════════════════════════════════════════════════
-   RESUME_DATA — Biswajit Mohapatra
-   ▸ Required fields are filled with real/demo values.
-   ▸ Optional fields marked with // TODO — update as needed.
-   ▸ Fields marked "// optional" can be removed if not applicable.
-════════════════════════════════════════════════════════════════════ */
 export const RESUME_DATA: ResumeData = {
-  // ── Required ────────────────────────────────────────────────────
   firstName: 'Biswajit',
   lastName: 'Mohapatra',
   title: 'Full Stack Developer & Data Engineer',
 
   contact: {
-    email: 'biswajit@example.com',           // TODO: update
-    phone: '+91 98765 43210',                // TODO: update
-    location: 'Bhubaneswar, Odisha, India',  // TODO: update
-    website: 'https://biswajit.dev',         // TODO: update
-    linkedin: 'linkedin.com/in/biswajit-mohapatra', // TODO: update
-    github: 'github.com/biswajitmohapatra',          // TODO: update
-    // twitter: '@biswajit_dev',             // optional — uncomment if needed
+    email: 'biswajitmohapatra447@example.com',
+    phone: '+91 8018035461',
+    location: 'Bhubaneswar, Odisha, India',
+    website: 'biswajit-mohapatra-portfolio.onrender.com',
+    linkedin: 'linkedin.com/in/biswajitmohapatra1',
+    github: 'github.com/codebybiswajit',
+    // twitter: '@biswajit_dev',
   },
 
   summary:
-    'Passionate Full Stack Developer & Data Engineer with 5+ years of experience ' +
+    'Passionate Full Stack Developer & Data Engineer with 1.55+ years of experience ' +
     'building production-grade web applications and distributed data systems. ' +
     'Skilled across the entire stack — from pixel-perfect React UIs to robust ' +
-    'Django/Node.js APIs, PostgreSQL schemas, and Kafka-driven data pipelines. ' +
-    'Proven track record delivering HIPAA-compliant enterprise software, ' +
+    'Node.js APIs, MongoDB schemas data pipelines. ' +
     'high-throughput scraping engines, and scalable e-commerce platforms.',
 
   skillGroups: [
     {
       category: 'Frontend',
       icon: '🎨',
-      skills: ['React 18', 'Next.js', 'TypeScript', 'CSS / Tailwind', 'Framer Motion', 'Bootstrap'],
+      skills: ['React 20', 'Next.js', 'TypeScript', 'CSS / Tailwind', 'Framer Motion', 'Bootstrap'],
     },
     {
       category: 'Backend',
       icon: '⚙️',
-      skills: ['Node.js', 'Express', 'Python', 'Django', 'Django REST Framework', 'GraphQL'],
+      skills: ['Node.js', 'Express', 'Python'],
     },
     {
       category: 'Databases',
       icon: '🗄️',
-      skills: ['PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'Elasticsearch'],
+      skills: ['MongoDB', 'MySQL'],
     },
     {
       category: 'Data & Scraping',
       icon: '📊',
-      skills: ['Scrapy', 'Selenium', 'Playwright', 'Kafka', 'Celery', 'BeautifulSoup'],
+      skills: ['Selenium', 'BeautifulSoup'],
     },
     {
       category: 'DevOps & Cloud',
       icon: '☁️',
-      skills: ['Docker', 'Kubernetes', 'AWS S3', 'AWS EC2', 'GitHub Actions', 'Nginx'],
+      skills: ['GitHub Actions'],
     },
     {
       category: 'Tools & Others',
       icon: '🔧',
-      skills: ['Git', 'Stripe API', 'JWT / OAuth2', 'WebSockets', 'Grafana', 'Linux'],
+      skills: ['Git', 'Stripe API', 'JWT / OAuth2', 'WebSockets', 'Linux'],
     },
   ],
 
   education: [
     {
       degree: 'Bachelor of Technology',
-      field: 'Computer Science & Engineering',   // optional
-      institution: 'Demo University',            // TODO: update
-      location: 'Bhubaneswar, Odisha',           // optional — TODO: update
-      start: '2018',
-      end: '2022',
-      gpa: '8.5 / 10',                          // optional — TODO: update or remove
-      honors: 'First Class with Distinction',    // optional — remove if not applicable
-      courses: [                                 // optional — remove if not needed
+      field: 'Computer Science & Engineering',
+      institution: 'Nalanda institute of technology',
+      location: 'Bhubaneswar, Odisha',
+      start: '2021',
+      end: '2025',
+      gpa: '8.06 / 10',
+      honors: 'First Class with Distinction',
+      courses: [
         'Data Structures & Algorithms',
         'Database Management Systems',
         'Computer Networks',
         'Operating Systems',
         'Software Engineering',
+        'Computer Organization and Architecture',
       ],
     },
   ],
@@ -195,56 +186,57 @@ export const RESUME_DATA: ResumeData = {
   experience: [
     {
       title: 'Full Stack Developer',
-      company: 'Demo Tech Pvt. Ltd.',   // TODO: update
-      location: 'Bhubaneswar, India',   // optional — TODO: update
-      type: 'Full-time',                // optional
-      start: 'Jan 2023',
+      company: 'Capsitech Software Solution Pvt. Ltd.',
+      location: 'Jodhpur, Rajasthan, India',
+      type: 'Full-time',
+      start: 'JUN 2026',
       end: 'Present',
-      summary: 'Leading full-stack development of SaaS products and internal tools.', // optional
+      summary: 'Working on the UK tax filing system in collaboration with the Acting Office and HMRC.',
       bullets: [
-        'Architected and shipped an E-Commerce platform (React + Node.js + PostgreSQL) serving 10k+ monthly users with Stripe-powered payments.',
-        'Migrated monolithic Django app to microservices, cutting API response time by 40% and deployment time by 60%.',
-        'Built a HIPAA-compliant Hospital Management System with end-to-end encryption, audit logs, and role-based access control.',
-        'Introduced CI/CD pipelines with GitHub Actions + Docker, reducing production incidents by 70%.',
+        "Integrated secure bank connection into SA100 data requests, enabling automated retrieval of financial records for individual tax filings.",
+        "Engineered enhancements to the UK Individual (SA100) and Partnership (SA800) tax systems within the Acting Office, improving accuracy and compliance workflows.",
+        "Developed and optimized P11D data request functionality, streamlining employer reporting of employee benefits and expenses.",
+        "Collaborated with HMRC and the Acting Office to modernize tax filing processes, reducing manual intervention and strengthening system reliability.",
+        "Implemented microservice architecture for both frontend and backend, improving scalability, enabling independent deployments, and reducing system downtime."
       ],
-      tech: ['React', 'Node.js', 'Django', 'PostgreSQL', 'Docker', 'AWS'], // optional
+      tech: ['React', 'Type Script', 'ASP.Net Core', 'MongoDB', 'Azure', 'Fluent UI', 'Azure Blob Storage', 'X-Unit Testing .Net', 'Jest React Testing Library'],
     },
     {
-      title: 'Data Engineering Intern',
-      company: 'Demo Analytics Co.',   // TODO: update
-      location: 'Remote',              // optional
-      type: 'Internship',              // optional
-      start: 'Jun 2022',
-      end: 'Dec 2022',
+      title: 'Python Developer Intern',
+      company: 'CodeSoft',
+      location: 'Remote',
+      type: 'Internship',
+      start: 'OCT 2023',
+      end: 'NOV 2023',
       bullets: [
-        'Designed and deployed a distributed Scrapy + Kafka web-scraping engine processing 8,000+ product records per run.',
-        'Built real-time monitoring dashboards in Grafana to track crawler health, proxy rotation, and data quality metrics.',
-        'Reduced data duplication by 35% using Redis-based deduplication across Kafka consumer pipelines.',
+        'Built real-time monitoring dashboards using Python to track crawler health, proxy rotation, and data quality metrics.',
+        'Reduced data duplication by 35% with BeautifulSoup-powered parsing and Python-based deduplication logic across consumer pipelines.'
       ],
-      tech: ['Python', 'Scrapy', 'Kafka', 'MongoDB', 'Redis', 'Grafana'], // optional
+      tech: ['Python', 'BeautifulSoup'],
     },
   ],
 
   projects: [
     {
       name: 'E-Commerce Platform',
-      tagline: 'Production-grade shopping platform with real-time inventory & payments', // optional
-      tech: ['React 18', 'Node.js', 'PostgreSQL', 'Stripe', 'Redis', 'Docker', 'AWS S3'],
+      tagline: 'Production-grade shopping platform with real-time inventory & payments',
+      tech: ['React', 'Node.js', 'MongoDB', 'Stripe', 'Redis'],
       desc: 'Full-stack e-commerce solution with JWT/OAuth2 auth, Elasticsearch product search, persistent Redis cart, Stripe payments, and a real-time admin dashboard.',
-      repo: 'github.com/biswajitmohapatra/ecommerce',  // optional — TODO: update
-      highlights: [                                     // optional
-        'Lighthouse performance score: 95+',
-        'Handles 500+ concurrent users with Redis caching',
-        'Supports multiple currencies and automated refunds',
+      repo: 'github.com/biswajitmohapatra/ecommerce',
+      highlights: [
+        'Introduced a basket feature tailored for organic vegetables, improving user convenience and boosting repeat purchases.',
+        'Implemented analytics to identify the most frequently purchased products, helping users make informed buying decisions and aiding inventory planning.',
+        'Designed a review‑based ranking system where top‑rated products surface first, increasing customer trust and engagement.',
+        'Enhanced checkout experience with multi‑currency support and automated refunds, ensuring seamless transactions across regions.',
       ],
     },
     {
       name: 'Hospital Management System',
-      tagline: 'HIPAA-compliant EHR & operations platform for healthcare providers', // optional
-      tech: ['Django', 'React', 'MySQL', 'Celery', 'Redis', 'WebSockets', 'Docker'],
+      // tagline: 'HIPAA-compliant EHR & operations platform for healthcare providers',
+      tech: ['Node.js', 'Express', 'React', 'MySQL', 'Redis', 'WebSockets'],
       desc: 'End-to-end hospital operations platform: patient records (EHR), smart appointment scheduling, automated billing & insurance claims, lab integrations, and HIPAA-grade security.',
-      repo: 'github.com/biswajitmohapatra/hms',  // optional — TODO: update
-      highlights: [                               // optional
+      repo: 'github.com/biswajitmohapatra/hms',
+      highlights: [
         'End-to-end AES-256 encryption on all PHI data',
         'Real-time appointment notifications via WebSockets',
         'Supports 50+ concurrent doctors and 500+ daily patient records',
@@ -256,10 +248,9 @@ export const RESUME_DATA: ResumeData = {
       tech: ['Python', 'Scrapy', 'Selenium', 'Playwright', 'Kafka', 'MongoDB', 'Redis', 'Grafana'],
       desc: 'Multi-node Scrapy cluster with Kafka queue, proxy rotation, CAPTCHA solving, request fingerprint randomization, and a real-time Grafana monitoring dashboard.',
       repo: 'github.com/biswajitmohapatra/scraper', // optional — TODO: update
-      highlights: [                                  // optional
-        '340+ requests/min sustained throughput',
-        '145 active proxies with smart rotation',
-        'Schema validation & deduplication pipeline',
+      highlights: [
+        'Built real-time monitoring dashboards using Python to track crawler health, proxy rotation, and data quality metrics.',
+        'Reduced data duplication by 35% with BeautifulSoup-powered parsing and Python-based deduplication logic across consumer pipelines.',
       ],
     },
   ],
@@ -267,29 +258,31 @@ export const RESUME_DATA: ResumeData = {
   // ── Optional ────────────────────────────────────────────────────
   tagline: 'Building systems that scale & experiences that delight.',
 
-  certifications: [                                   // optional — remove entire block if not needed
+  certifications: [
     {
-      name: 'AWS Certified Developer – Associate',    // TODO: update or remove
-      issuer: 'Amazon Web Services',
-      date: '2023',
-      // credentialId: 'AWS-12345',                   // optional
-      // url: 'https://aws.amazon.com/verify',        // optional
+      name: 'AI Appreciate & AI Aware Badge',
+      issuer: 'CBSE and Intel',
+      date: 'AUG 2023',
+      credentialId: '1',
+      url: 'https://ai-for-all.in/#/badge?id=U2FsdGVkX18WAlDeUADw21Cp1L2u3SeUODjPKp1L2u3Soms1L2a3S4hoQC7Ok5U7wbbU4ose6yb1EbaRvuKg',
     },
     {
-      name: 'Meta React Developer Certificate',       // TODO: update or remove
-      issuer: 'Coursera / Meta',
-      date: '2022',
+      name: 'Python  ',
+      issuer: 'Hacker Rank',
+      date: '28 JAN 2024',
+      credentialId: '2c150edbd7c5',
+      url: 'https://www.hackerrank.com/certificates/2c150edbd7c5',
     },
   ],
 
-  languages: [                                        // optional
+  languages: [
     { language: 'English', proficiency: 'Professional' },
-    { language: 'Hindi',   proficiency: 'Fluent' },
-    { language: 'Odia',    proficiency: 'Native' },
+    { language: 'Hindi', proficiency: 'Fluent' },
+    { language: 'Odia', proficiency: 'Native' },
   ],
 
-  interests: ['Open Source', 'System Design', 'Competitive Programming', 'Tech Blogging'], // optional
+  interests: ['Open Source', 'Competitive Programming', 'Tech Blogging'],
 
-  openToWork: true,             // optional
-  availableFrom: 'Immediately', // optional — TODO: update if needed
+  openToWork: true,
+  availableFrom: 'Immediately',
 };

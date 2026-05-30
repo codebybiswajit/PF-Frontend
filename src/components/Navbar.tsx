@@ -6,8 +6,8 @@ import { useAuth } from '../context/AuthContext';
 import ProfileModal from './ProfileModal';
 import { applyThemeAndAccent } from '../utils/theme';
 import { usePublicPortfolio } from '../context/PublicPortfolioContext';
-
-const Navbar: React.FC = () => {
+import { getInitials } from '../pages/AboutPage';
+const Navbar = () => {
   const { user, logout } = useAuth();
   const { publicUser, clearPublicUser } = usePublicPortfolio();
   const navigate = useNavigate();
@@ -18,6 +18,10 @@ const Navbar: React.FC = () => {
 
   const isAuthenticated = !!user && !publicUser; // treat as unauthenticated inside public view for guest simplicity
   const closeNav = useCallback(() => setNavOpen(false), []);
+
+  const navTitle = user
+    ? `${getInitials(user.firstName, user.lastName)}.DEV`
+    : 'BM.DEV';
 
   const handleProtectedLink = useCallback(
     (e: React.MouseEvent, path: string) => {
@@ -44,7 +48,7 @@ const Navbar: React.FC = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(nextTheme);
     localStorage.setItem('portfolio_theme', nextTheme);
-    
+
     const savedAccent = localStorage.getItem('portfolio_accent') || 'classic';
     applyThemeAndAccent(nextTheme, savedAccent);
 
@@ -69,7 +73,7 @@ const Navbar: React.FC = () => {
   return (
     <>
       {publicUser && (
-        <div 
+        <div
           style={{
             background: 'linear-gradient(90deg, var(--neon), var(--neon2))',
             color: '#050510',
@@ -116,7 +120,7 @@ const Navbar: React.FC = () => {
         </div>
       )}
 
-      <nav 
+      <nav
         className="navbar navbar-expand-lg pf-nav sticky-top"
         style={{
           top: publicUser ? '32px' : '0px',
@@ -124,174 +128,177 @@ const Navbar: React.FC = () => {
         }}
       >
         <div className="container-fluid px-4">
-        {/* Logo */}
-        <NavLink to="/" className="navbar-brand pf-logo" onClick={closeNav}>
-          BM.DEV
-        </NavLink>
+          {/* Logo */}
+          {/* {!(user || publicUser) && ( */}
+          <NavLink to="/" className="navbar-brand pf-logo" onClick={closeNav}>
+            {navTitle}
+          </NavLink>
+          {/* )} */}
 
-        {/* Hamburger */}
-        <button
-          className="navbar-toggler border-0 shadow-none"
-          type="button"
-          aria-label="Toggle navigation"
-          aria-expanded={navOpen}
-          onClick={() => setNavOpen(o => !o)}
-        >
-          <span className="navbar-toggler-icon" />
-        </button>
+          {/* Hamburger */}
+          <button
+            className="navbar-toggler border-0 shadow-none"
+            type="button"
+            aria-label="Toggle navigation"
+            aria-expanded={navOpen}
+            onClick={() => setNavOpen(o => !o)}
+            onBlur={() => setNavOpen(o => !o)}
+          >
+            <span className="navbar-toggler-icon" />
+          </button>
 
-        {/* Collapsible */}
-        <div className={`collapse navbar-collapse${navOpen ? ' show' : ''}`}>
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-            <li className="nav-item">
-              <NavLink
-                to="/" end
-                className={({ isActive }) => `nav-link pf-nav-link${isActive ? ' active' : ''}`}
-                onClick={closeNav}
-              >
-                Home
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink
-                to="/projects"
-                className={({ isActive }) => `nav-link pf-nav-link${isActive ? ' active' : ''}`}
-                onClick={closeNav}
-              >
-                Projects
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink
-                to="/about"
-                className={({ isActive }) => `nav-link pf-nav-link${isActive ? ' active' : ''}`}
-                onClick={closeNav}
-              >
-                About
-              </NavLink>
-            </li>
-            {!isAuthenticated && <li className="nav-item">
-              <NavLink
-                to="/my-resume"
-                className={({ isActive }) => `nav-link pf-nav-link${isActive ? ' active' : ''}`}
-                onClick={closeNav}
-              >
-                Resume
-              </NavLink>
-            </li>}
-            {/* AI Chat — accessible but limited for guests */}
-            <li className="nav-item">
-              <NavLink
-                to="/chat"
-                className={({ isActive }) => `nav-link pf-nav-link${isActive ? ' active' : ''}`}
-                onClick={closeNav}
-              >
-                AI Chat <span className="badge" >Beta</span>
-              </NavLink>
-            </li>
-          </ul>
+          {/* Collapsible */}
+          <div className={`collapse navbar-collapse${navOpen ? ' show' : ''}`}>
+            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+              <li className="nav-item">
+                <NavLink
+                  to="/" end
+                  className={({ isActive }) => `nav-link pf-nav-link${isActive ? ' active' : ''}`}
+                  onClick={closeNav}
+                >
+                  Home
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink
+                  to="/projects"
+                  className={({ isActive }) => `nav-link pf-nav-link${isActive ? ' active' : ''}`}
+                  onClick={closeNav}
+                >
+                  Projects
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink
+                  to="/about"
+                  className={({ isActive }) => `nav-link pf-nav-link${isActive ? ' active' : ''}`}
+                  onClick={closeNav}
+                >
+                  About
+                </NavLink>
+              </li>
+              {!isAuthenticated && <li className="nav-item">
+                <NavLink
+                  to="/my-resume"
+                  className={({ isActive }) => `nav-link pf-nav-link${isActive ? ' active' : ''}`}
+                  onClick={closeNav}
+                >
+                  Resume
+                </NavLink>
+              </li>}
+              {/* AI Chat — accessible but limited for guests */}
+              <li className="nav-item">
+                <NavLink
+                  to="/chat"
+                  className={({ isActive }) => `nav-link pf-nav-link${isActive ? ' active' : ''}`}
+                  onClick={closeNav}
+                >
+                  AI Chat <span className="badge" >Beta</span>
+                </NavLink>
+              </li>
+            </ul>
 
-          {/* Auth and Theme buttons */}
-          <div className="d-flex align-items-center gap-2 flex-wrap">
-            {/* Sun / Moon Theme Toggle */}
-            <button
-              className="theme-toggle-btn me-2"
-              onClick={toggleTheme}
-              title="Toggle Light/Dark Theme"
-              type="button"
-            >
-              {theme === 'dark' ? <FiSun /> : <FiMoon />}
-            </button>
+            {/* Auth and Theme buttons */}
+            <div className="d-flex align-items-center gap-2 flex-wrap">
+              {/* Sun / Moon Theme Toggle */}
+              <button
+                className="theme-toggle-btn me-2"
+                onClick={toggleTheme}
+                title="Toggle Light/Dark Theme"
+                type="button"
+              >
+                {theme === 'dark' ? <FiSun /> : <FiMoon />}
+              </button>
 
-            {isAuthenticated && user ? (
-              <>
-                <div className="profile-chip-wrapper">
+              {isAuthenticated && user ? (
+                <>
+                  <div className="profile-chip-wrapper">
+                    <button
+                      className="profile-chip"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDropdownOpen(o => !o);
+                      }}
+                      type="button"
+                    >
+                      <div className="avatar">{userInitials}</div>
+                      <span className="d-none d-sm-inline">{user.firstName}</span>
+                    </button>
+
+                    {/* Profile Dropdown */}
+                    {dropdownOpen && (
+                      <div className="pf-dropdown">
+                        <button
+                          className="dropdown-item-pf"
+                          onClick={() => {
+                            setDropdownOpen(false);
+                            setModalOpen(true);
+                          }}
+                          type="button"
+                        >
+                          ⚙️ Update Profile
+                        </button>
+                        <button
+                          className="dropdown-item-pf"
+                          onClick={() => {
+                            setDropdownOpen(false);
+                            navigate('/my-resume');
+                          }}
+                          type="button"
+                        >
+                          📄 View ATS Resume
+                        </button>
+                        <hr style={{ margin: '0.25rem 0', borderColor: 'var(--border)', opacity: 0.2 }} />
+                        <button
+                          className="dropdown-item-pf"
+                          onClick={() => {
+                            setDropdownOpen(false);
+                            handleSignOut();
+                          }}
+                          style={{ color: 'var(--neon2)' }}
+                          type="button"
+                        >
+                          🚪 Sign Out
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Resume — protected */}
+                  <div className="nav-item me-2">
+                    <a
+                      href="/resume"
+                      className={`nav-link pf-nav-link${!isAuthenticated ? ' text-muted' : ''}`}
+                      onClick={e => handleProtectedLink(e, '/resume')}
+                    >
+                      {!isAuthenticated && <span className="me-1">🔒</span>}Your Resume
+                    </a>
+                  </div>
                   <button
-                    className="profile-chip"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setDropdownOpen(o => !o);
-                    }}
-                    type="button"
+                    className="btn-neon"
+                    onClick={() => { closeNav(); navigate('/signin'); }}
                   >
-                    <div className="avatar">{userInitials}</div>
-                    <span className="d-none d-sm-inline">{user.firstName}</span>
+                    Sign In
                   </button>
-
-                  {/* Profile Dropdown */}
-                  {dropdownOpen && (
-                    <div className="pf-dropdown">
-                      <button
-                        className="dropdown-item-pf"
-                        onClick={() => {
-                          setDropdownOpen(false);
-                          setModalOpen(true);
-                        }}
-                        type="button"
-                      >
-                        ⚙️ Update Profile
-                      </button>
-                      <button
-                        className="dropdown-item-pf"
-                        onClick={() => {
-                          setDropdownOpen(false);
-                          navigate('/resume');
-                        }}
-                        type="button"
-                      >
-                        📄 View ATS Resume
-                      </button>
-                      <hr style={{ margin: '0.25rem 0', borderColor: 'var(--border)', opacity: 0.2 }} />
-                      <button
-                        className="dropdown-item-pf"
-                        onClick={() => {
-                          setDropdownOpen(false);
-                          handleSignOut();
-                        }}
-                        style={{ color: 'var(--neon2)' }}
-                        type="button"
-                      >
-                        🚪 Sign Out
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </>
-            ) : (
-              <>
-                {/* Resume — protected */}
-                <div className="nav-item me-2">
-                  <a
-                    href="/resume"
-                    className={`nav-link pf-nav-link${!isAuthenticated ? ' text-muted' : ''}`}
-                    onClick={e => handleProtectedLink(e, '/resume')}
+                  <button
+                    className="btn-pink"
+                    onClick={() => { closeNav(); navigate('/signup'); }}
                   >
-                    {!isAuthenticated && <span className="me-1">🔒</span>}Your Resume
-                  </a>
-                </div>
-                <button
-                  className="btn-neon"
-                  onClick={() => { closeNav(); navigate('/signin'); }}
-                >
-                  Sign In
-                </button>
-                <button
-                  className="btn-pink"
-                  onClick={() => { closeNav(); navigate('/signup'); }}
-                >
-                  Register
-                </button>
-              </>
-            )}
+                    Register
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-    </nav>
-    {/* Dynamic Edit Profile Modal */}
-    <ProfileModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
-  </>
-);
+      </nav>
+      {/* Dynamic Edit Profile Modal */}
+      <ProfileModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
+    </>
+  );
 };
 
 export default Navbar;

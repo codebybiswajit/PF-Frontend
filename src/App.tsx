@@ -9,7 +9,6 @@ import ProjectsPage from './pages/ProjectsPage';
 import AboutPage from './pages/AboutPage';
 import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
-import ResumePage from './pages/ResumePage';
 import ChatPage from './pages/ChatPage';
 import MyResumePage from './pages/MyResumePage';
 
@@ -50,9 +49,6 @@ const App: React.FC = () => {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/signin" element={<SignInPage />} />
           <Route path="/signup" element={<SignUpPage />} />
-
-          {/* Auth-gated (pages handle their own auth guard) */}
-          <Route path="/resume" element={<ResumePage />} />
           <Route path="/my-resume" element={<MyResumePage />} />
           <Route path="/chat" element={<ChatPage />} />
 

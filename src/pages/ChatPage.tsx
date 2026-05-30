@@ -5,9 +5,10 @@ import React, {
   useCallback,
 } from 'react';
 import type { KeyboardEvent } from 'react';
-import * as webllm from '@mlc-ai/web-llm';
+import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { PUBLIC_CHAT_QA } from '../data/portfolioData';
+import { authApi } from '../services/api';
 
 /* ── Types ─────────────────────────────────────────────────────── */
 interface ChatMsg {
@@ -16,15 +17,11 @@ interface ChatMsg {
 }
 
 type ModelStatus =
-  | 'idle'
-  | 'initializing'
-  | 'loading'
   | 'ready'
-  | 'error'
   | 'guest';
 
 /* ── Constants ─────────────────────────────────────────────────── */
-const MODEL_ID = 'Phi-3.5-mini-instruct-q4f16_1-MLC';
+const MODEL_ID = 'Groq Llama 3.3';
 
 const SYSTEM_PROMPT = `You are Biswajit Mohapatra's AI portfolio assistant. Biswajit is a Full Stack Developer & Data Engineer specializing in React, Node.js, Python, and data engineering.
 
@@ -112,24 +109,21 @@ const ChatPage: React.FC = () => {
     {
       role: 'assistant',
       content: isAuthenticated
-        ? `Hey ${'firstName' in (user ?? {}) ? (user as { firstName?: string }).firstName ?? 'there' : 'there'}! 👋 I'm Biswajit's AI assistant, powered by a local LLM running right in your browser. Ask me anything about the portfolio, Biswajit's projects, or tech stack!`
+        ? `Hey ${'firstName' in (user ?? {}) ? (user as { firstName?: string }).firstName ?? 'there' : 'there'}! 👋 I'm Biswajit's AI assistant, powered by Groq. Ask me anything about the portfolio, Biswajit's projects, or tech stack!`
         : `Hey there! 👋 I'm Biswajit's AI assistant. I'm running in **Guest Mode** — I can answer common questions about this portfolio instantly. For full AI conversations, sign up or log in!`,
     },
   ]);
 
   const [input, setInput] = useState('');
   const [thinking, setThinking] = useState(false);
+  const [generating, setGenerating] = useState(false);
   const [modelStatus, setModelStatus] = useState<ModelStatus>(
-    isAuthenticated ? 'idle' : 'guest'
+    isAuthenticated ? 'ready' : 'guest'
   );
-  const [loadProgress, setLoadProgress] = useState(0);
-  const [loadText, setLoadText] = useState('');
-  const [modelError, setModelError] = useState<string | null>(null);
 
-  const engineRef = useRef<webllm.MLCEngineInterface | null>(null);
   const msgsEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const initStartedRef = useRef(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   /* ── Auto-scroll to latest message ──────────────────────────── */
   useEffect(() => {
@@ -141,75 +135,58 @@ const ChatPage: React.FC = () => {
     inputRef.current?.focus();
   }, []);
 
-  /* ── Load WebLLM engine (authenticated users only) ───────────── */
-  const loadModel = useCallback(async () => {
-    if (!isAuthenticated) return;
-    if (engineRef.current || initStartedRef.current) return;
-    initStartedRef.current = true;
-
-    setModelStatus('initializing');
-    setLoadText('Initializing WebLLM engine…');
-
-    try {
-      const initProgress = (report: webllm.InitProgressReport) => {
-        setLoadText(report.text);
-        // Try to extract percentage like "Loading model... 42%"
-        const match = report.text.match(/(\d+(\.\d+)?)\s*%/);
-        if (match) {
-          setLoadProgress(parseFloat(match[1]));
-          setModelStatus('loading');
-        } else {
-          setModelStatus('initializing');
-        }
-      };
-
-      const engine = await webllm.CreateMLCEngine(MODEL_ID, {
-        initProgressCallback: initProgress,
-      });
-
-      engineRef.current = engine;
-      setModelStatus('ready');
-      setLoadProgress(100);
-      setLoadText('');
-    } catch (err: unknown) {
-      const msg =
-        err instanceof Error ? err.message : 'Unknown error while loading model.';
-      setModelError(msg);
-      setModelStatus('error');
-      console.error('[WebLLM] Load error:', err);
-    }
-  }, [isAuthenticated]);
-
-  /* ── Auto-trigger model load for authenticated users ─────────── */
+  /* ── Auto-update model status when authentication loads ──────── */
   useEffect(() => {
-    if (isAuthenticated && modelStatus === 'idle') {
-      loadModel();
+    if (!authCtx.isLoading) {
+      if (isAuthenticated && modelStatus === 'guest') {
+        setModelStatus('ready');
+        setMessages([
+          {
+            role: 'assistant',
+            content: `Hey ${'firstName' in (user ?? {}) ? (user as { firstName?: string }).firstName ?? 'there' : 'there'}! 👋 I'm Biswajit's AI assistant, powered by Groq. Ask me anything about the portfolio, Biswajit's projects, or tech stack!`
+          }
+        ]);
+      } else if (!isAuthenticated && modelStatus !== 'guest') {
+        setModelStatus('guest');
+        setMessages([
+          {
+            role: 'assistant',
+            content: `Hey there! 👋 I'm Biswajit's AI assistant. I'm running in **Guest Mode** — I can answer common questions about this portfolio instantly. For full AI conversations, sign up or log in!`
+          }
+        ]);
+      }
     }
-  }, [isAuthenticated, modelStatus, loadModel]);
+  }, [isAuthenticated, modelStatus, authCtx.isLoading, user]);
 
   /* ── Human-readable status label ─────────────────────────────── */
   const statusLabel = (): string => {
     switch (modelStatus) {
-      case 'idle': return '● Idle';
-      case 'initializing': return '● Initializing...';
-      case 'loading': return `● Loading model ${loadProgress.toFixed(0)}%...`;
       case 'ready': return '● Ready';
-      case 'error': return '● Error';
       case 'guest': return '● Guest Mode';
       default: return '● Unknown';
     }
   };
 
+  /* ── Stop generation handler ────────────────────────────────── */
+  const handleStop = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    setThinking(false);
+    setGenerating(false);
+  }, []);
+
   /* ── Core: send a message ────────────────────────────────────── */
   const sendMessage = useCallback(
     async (text: string) => {
       const trimmed = text.trim();
-      if (!trimmed || thinking) return;
+      if (!trimmed || thinking || generating) return;
 
       const userMsg: ChatMsg = { role: 'user', content: trimmed };
       setMessages((prev) => [...prev, userMsg]);
       setInput('');
       setThinking(true);
+      setGenerating(true);
 
       try {
         /* ════ TIER 1: Instant pattern match — no model needed ════ */
@@ -236,61 +213,62 @@ const ChatPage: React.FC = () => {
           return;
         }
 
-        // Model still loading?
-        if (modelStatus !== 'ready' || !engineRef.current) {
-          await new Promise<void>((r) => setTimeout(r, 500));
-          setMessages((prev) => [
-            ...prev,
-            {
-              role: 'assistant',
-              content:
-                '⚙️ The AI model is still loading — watch the progress bar above! Once it hits 100% you\'ll get full AI responses. Pattern-matched answers still work instantly.',
-            },
-          ]);
-          return;
-        }
+        // Dynamic, personalized system prompt
+        const userName = user && 'firstName' in user ? (user as { firstName?: string }).firstName ?? 'Guest' : 'Guest';
+        const dynamicSystemPrompt = `${SYSTEM_PROMPT}\n\nYou are chatting with ${userName}. Feel free to refer to them by their name naturally.`;
+
+        // Dynamically adjust history window size based on user prompt (default last 5, but last 10 if querying memory)
+        const queriesMemory = trimmed.toLowerCase().match(/\b(remember|recall|earlier|previous)\b/);
+        const historyWindowSize = queriesMemory ? -10 : -5;
 
         // Build conversation context
-        const history: webllm.ChatCompletionMessageParam[] = [
-          { role: 'system', content: SYSTEM_PROMPT },
-          // Include recent history (last 10 turns to avoid token overflow)
-          ...messages.slice(-10).map((m) => ({
-            role: m.role as 'user' | 'assistant',
+        const history = [
+          { role: 'system', content: dynamicSystemPrompt },
+          // Exclude the initial greeting message at index 0, and keep N turns
+          ...messages.slice(1).slice(historyWindowSize).map((m) => ({
+            role: m.role,
             content: m.content,
           })),
           { role: 'user', content: trimmed },
         ];
 
-        const reply = await engineRef.current.chat.completions.create({
-          messages: history,
-          temperature: 0.7,
-          max_tokens: 512,
-          stream: false,
-        });
+        // Create AbortController for this request
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
 
-        const content =
-          reply.choices[0]?.message?.content ??
-          'Sorry, I couldn\'t generate a response. Please try again.';
+        const resData = await authApi.chat(history, { signal: controller.signal });
 
-        setMessages((prev) => [...prev, { role: 'assistant', content }]);
+        const replyContent =
+          resData.choices?.[0]?.message?.content ??
+          'I could not generate a response. Please try again.';
 
-      } catch (err: unknown) {
-        console.error('[ChatPage] sendMessage error:', err);
-        const errMsg =
-          err instanceof Error ? err.message : 'An unexpected error occurred.';
         setMessages((prev) => [
           ...prev,
-          {
-            role: 'assistant',
-            content: `❌ Oops! Something went wrong: ${errMsg}. Please try again.`,
-          },
+          { role: 'assistant', content: replyContent },
         ]);
+
+      } catch (err: any) {
+        if (err.name === 'CanceledError' || axios.isCancel?.(err)) {
+          console.log('[ChatPage] Request canceled by user.');
+        } else {
+          console.error('[ChatPage] sendMessage error:', err);
+          const errMsg =
+            err.response?.data?.message || err.message || 'An unexpected error occurred.';
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: 'assistant',
+              content: `❌ Oops! Something went wrong: ${errMsg}. Please try again.`,
+            },
+          ]);
+        }
       } finally {
         setThinking(false);
+        setGenerating(false);
         inputRef.current?.focus();
       }
     },
-    [thinking, isAuthenticated, messages, modelStatus]
+    [thinking, generating, isAuthenticated, messages, user]
   );
 
   /* ── Enter key handler ───────────────────────────────────────── */
@@ -315,6 +293,27 @@ const ChatPage: React.FC = () => {
   const quickActions = isAuthenticated ? AUTH_QUICK_ACTIONS : PUBLIC_QUICK_ACTIONS;
 
   /* ── Render ──────────────────────────────────────────────────── */
+  if (authCtx.isLoading) {
+    return (
+      <div
+        style={{
+          height: '80vh',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          background: 'var(--bg)',
+          color: 'var(--neon)',
+          fontFamily: 'Orbitron, monospace',
+          letterSpacing: '2px'
+        }}
+      >
+        <div style={{ fontSize: '3rem', marginBottom: '1.5rem', animation: 'spin 4s linear infinite' }}>🤖</div>
+        <h3>ESTABLISHING SECURE AI SESSION...</h3>
+      </div>
+    );
+  }
+
   return (
     <div className="chat-wrap">
 
@@ -346,81 +345,7 @@ const ChatPage: React.FC = () => {
         )}
       </div>
 
-      {/* ── WebLLM loading bar (authenticated + loading/initializing) ── */}
-      {isAuthenticated &&
-        (modelStatus === 'loading' || modelStatus === 'initializing') && (
-          <div className="webllm-loading">
-            <div
-              className="d-flex justify-content-between align-items-center"
-              style={{ marginBottom: '0.4rem' }}
-            >
-              <span
-                style={{
-                  fontSize: '0.78rem',
-                  color: 'var(--neon)',
-                  fontFamily: "'Share Tech Mono', monospace",
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  maxWidth: '75%',
-                }}
-              >
-                {loadText || 'Preparing AI engine…'}
-              </span>
-              <span
-                style={{
-                  fontSize: '0.75rem',
-                  color: 'var(--muted)',
-                  fontFamily: "'Share Tech Mono', monospace",
-                  marginLeft: '0.5rem',
-                  flexShrink: 0,
-                }}
-              >
-                {loadProgress.toFixed(0)}%
-              </span>
-            </div>
 
-            <div className="webllm-progress">
-              <div
-                className="webllm-progress-bar"
-                style={{ width: `${loadProgress}%` }}
-              />
-            </div>
-
-            <p
-              style={{
-                fontSize: '0.74rem',
-                color: 'var(--muted)',
-                marginTop: '0.5rem',
-                marginBottom: 0,
-              }}
-            >
-              ⚡ Loading{' '}
-              <span style={{ color: 'var(--neon)' }}>{MODEL_ID}</span>{' '}
-              locally in your browser — first-time load may take a minute.
-            </p>
-          </div>
-        )}
-
-      {/* ── Model error banner ── */}
-      {modelStatus === 'error' && modelError && (
-        <div
-          className="mb-3 p-3"
-          style={{
-            background: 'rgba(255,68,68,0.07)',
-            border: '1px solid rgba(255,68,68,0.3)',
-            borderRadius: '4px',
-            fontSize: '0.85rem',
-            color: '#ff6666',
-          }}
-        >
-          <strong>⚠ Model failed to load:</strong> {modelError}
-          <br />
-          <span style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>
-            Pattern-based responses still work. Refresh the page to retry loading the model.
-          </span>
-        </div>
-      )}
 
       {/* ── Quick action buttons ── */}
       <div className="quick-actions">
@@ -429,7 +354,7 @@ const ChatPage: React.FC = () => {
             key={action}
             className="quick-btn"
             onClick={() => handleQuickAction(action)}
-            disabled={thinking}
+            disabled={generating}
           >
             {action}
           </button>
@@ -479,18 +404,28 @@ const ChatPage: React.FC = () => {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          disabled={thinking}
+          disabled={generating}
           autoComplete="off"
           spellCheck={false}
         />
-        <button
-          className="btn-neon"
-          onClick={() => sendMessage(input)}
-          disabled={thinking || !input.trim()}
-          style={{ whiteSpace: 'nowrap', minWidth: '84px' }}
-        >
-          {thinking ? '…' : 'SEND'}
-        </button>
+        {generating ? (
+          <button
+            className="btn-pink"
+            onClick={handleStop}
+            style={{ whiteSpace: 'nowrap', minWidth: '84px' }}
+          >
+            STOP
+          </button>
+        ) : (
+          <button
+            className="btn-neon"
+            onClick={() => sendMessage(input)}
+            disabled={!input.trim()}
+            style={{ whiteSpace: 'nowrap', minWidth: '84px' }}
+          >
+            SEND
+          </button>
+        )}
       </div>
 
       {/* ── Guest upsell footer ── */}

@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
 import { authApi } from '../services/api';
 import { usePublicPortfolio } from '../context/PublicPortfolioContext';
 
-const PublicPortfolioViewer: React.FC = () => {
+const PublicPortfolioViewer = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { setPublicUser } = usePublicPortfolio();

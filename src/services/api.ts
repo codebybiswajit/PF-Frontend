@@ -32,6 +32,11 @@ export const authApi = {
     return res.data.user;
   },
 
+  chat: async (messages: { role: string; content: string }[], options?: { signal?: AbortSignal }): Promise<any> => {
+    const res = await api.post('/auth/chat', { messages }, options);
+    return res.data;
+  },
+
   updateProfile: async (id: string, data: Partial<User>): Promise<{ user: User }> => {
     const res = await api.put<{ user: User }>(`/users/${id}/profile`, data);
     return res.data;

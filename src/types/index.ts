@@ -127,7 +127,6 @@ export interface ResumeLanguage {
 }
 
 export interface ResumeData {
-  // ── Required ──────────────────────────────────────────
   firstName: string;
   lastName: string;
   title: string;
@@ -138,12 +137,11 @@ export interface ResumeData {
   experience: ResumeExperience[];
   projects: ResumeProject[];
 
-  // ── Optional ──────────────────────────────────────────
-  profilePhoto?: string;          // URL or base64
-  tagline?: string;               // short punchy sub-title
+  profilePhoto?: string;
+  tagline?: string;
   certifications?: ResumeCertification[];
   languages?: ResumeLanguage[];
-  interests?: string[];           // e.g. ['Open Source', 'Chess']
+  interests?: string[];
   openToWork?: boolean;
-  availableFrom?: string;         // e.g. 'June 2025'
+  availableFrom?: string;
 }
