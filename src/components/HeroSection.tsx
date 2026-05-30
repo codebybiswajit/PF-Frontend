@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
+import { usePublicPortfolio } from '../context/PublicPortfolioContext';
 import { SITE_INFO } from '../data/portfolioData';
 
 const TYPING_PHRASES = [
@@ -31,7 +32,9 @@ const fadeUp = {
 const HeroSection: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const isAuthenticated = !!user;
+  const { publicUser } = usePublicPortfolio();
+  const activeUser = publicUser || user;
+  const isAuthenticated = !!activeUser;
 
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [displayed, setDisplayed] = useState('');
@@ -113,7 +116,15 @@ const HeroSection: React.FC = () => {
               animate="visible"
               custom={0.15}
             >
-              Biswajit<br />Mohapatra
+              {isAuthenticated && activeUser ? (
+                <>
+                  {activeUser.firstName}<br />{activeUser.lastName}
+                </>
+              ) : (
+                <>
+                  Biswajit<br />Mohapatra
+                </>
+              )}
             </motion.h1>
 
             {/* Typing subtitle */}

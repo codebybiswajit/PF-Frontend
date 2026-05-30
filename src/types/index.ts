@@ -35,6 +35,7 @@ export interface User {
   education: Education[];
   experience: Experience[];
   projects: Project[];
+  portfolioSlug?: string;
 }
 
 export interface AuthResponse {

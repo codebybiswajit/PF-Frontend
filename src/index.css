@@ -199,10 +199,66 @@ body::before {
   left: 0;
   right: 0;
   z-index: 1000;
-  background: rgba(5, 5, 16, 0.92);
+  background: var(--nav-bg, rgba(5, 5, 16, 0.92));
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
-  height: 60px;
+  min-height: 60px;
+  height: auto;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+@media (max-width: 991.98px) {
+  .pf-nav {
+    min-height: 60px;
+    height: auto !important;
+    padding-bottom: 0.75rem;
+  }
+  
+  .navbar-collapse {
+    background: var(--bg2, #050510);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.25rem 1rem;
+    margin-top: 0.75rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  }
+
+  .navbar-nav {
+    gap: 0.5rem;
+    margin-bottom: 1rem !important;
+  }
+
+  .pf-nav-link {
+    padding: 0.6rem 1rem !important;
+    width: 100%;
+    display: block;
+    border-radius: 3px;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+
+  .pf-nav-link:hover,
+  .pf-nav-link.active {
+    background: rgba(0, 255, 240, 0.05) !important;
+  }
+
+  .profile-chip-wrapper {
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+
+  .profile-chip {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .pf-dropdown {
+    position: static !important;
+    width: 100% !important;
+    margin-top: 0.5rem;
+    box-shadow: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+  }
 }
 
 .pf-logo {
@@ -305,7 +361,7 @@ body::before {
   font-weight: 900;
   line-height: 1;
   margin-bottom: 1rem;
-  background: linear-gradient(135deg, #fff 0%, var(--neon) 50%, var(--neon2) 100%);
+  background: linear-gradient(135deg, var(--hero-gradient-start, #ffffff) 0%, var(--neon) 50%, var(--neon2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -862,6 +918,38 @@ body::before {
 
 .entry-remove:hover {
   color: var(--neon2);
+}
+
+/* Custom Portfolio Link Slug input group responsiveness */
+.pf-slug-input-group {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.pf-slug-prefix {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  padding: 0.6rem 0.75rem;
+  font-size: 0.85rem;
+  font-family: 'Share Tech Mono', monospace;
+  border-radius: 3px;
+  color: var(--muted);
+  user-select: none;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+@media (max-width: 576px) {
+  .pf-slug-input-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .pf-slug-prefix {
+    justify-content: center;
+    text-align: center;
+  }
 }
 
 .add-btn {
@@ -2095,4 +2183,214 @@ body::before {
     flex-direction: column;
     align-items: flex-start;
   }
+}
+
+/* ==========================================
+   GLOBAL THEME TRANSITIONS & LIGHT THEME
+   ========================================== */
+
+/* Smooth transitions for theme switching */
+body,
+.pf-nav,
+.proj-card,
+.skill-cat,
+.auth-card,
+.pf-modal-box,
+.pf-input,
+.pf-textarea,
+.entry-card,
+.mr-main,
+.mr-exp-card,
+.mr-proj-card,
+.mr-edu-card,
+.resume-doc {
+  transition: background-color 0.3s ease, background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Light Theme Variables */
+[data-theme="light"] {
+  --bg: #f8fafc;
+  --bg2: #ffffff;
+  --bg3: #f1f5f9;
+  --card: #ffffff;
+  --card2: #f8fafc;
+  --text: #0f172a;
+  --muted: #1e293b;
+  /* Premium slate-800 for crisp, legibility-first text contrast */
+  --border: rgba(0, 180, 216, 0.2);
+  --nav-bg: rgba(255, 255, 255, 0.94);
+  --glow: 0 4px 20px rgba(0, 180, 216, 0.15);
+  --glow2: 0 4px 20px rgba(219, 39, 119, 0.15);
+  --hero-gradient-start: #0f172a;
+  /* Slate-900 start color for gorgeous high-contrast title gradients */
+}
+
+/* Light theme particle overlay adjustments */
+[data-theme="light"] body::before {
+  opacity: 0.3;
+}
+
+/* Light theme scrollbars */
+[data-theme="light"] ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: rgba(0, 180, 216, 0.2);
+}
+
+/* Theme Toggle Button Style */
+.theme-toggle-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--neon);
+  width: 38px;
+  height: 38px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 1.1rem;
+}
+
+.theme-toggle-btn:hover {
+  border-color: var(--neon);
+  background: rgba(0, 255, 240, 0.05);
+  box-shadow: var(--glow);
+}
+
+[data-theme="light"] .theme-toggle-btn {
+  color: #db2777;
+  /* Use deep pink for light mode theme toggle */
+  border-color: rgba(219, 39, 119, 0.2);
+}
+
+[data-theme="light"] .theme-toggle-btn:hover {
+  border-color: #db2777;
+  background: rgba(219, 39, 119, 0.05);
+  box-shadow: var(--glow2);
+}
+
+/* Profile Dropdown Styling */
+.profile-chip-wrapper {
+  position: relative;
+}
+
+.pf-dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  width: 220px;
+  padding: 0.5rem 0;
+  box-shadow: var(--glow);
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+  animation: dropdownFade 0.2s ease-out;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-item-pf {
+  background: none;
+  border: none;
+  color: var(--text);
+  padding: 0.6rem 1.2rem;
+  text-align: left;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dropdown-item-pf:hover {
+  background: rgba(0, 255, 240, 0.08);
+  color: var(--neon);
+}
+
+[data-theme="light"] .dropdown-item-pf:hover {
+  background: rgba(219, 39, 119, 0.08);
+  color: #db2777;
+}
+
+/* Interactive Tabs (Pivots) in Profile Modal */
+.modal-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+  gap: 0.5rem;
+}
+
+.modal-tab {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: 'Orbitron', monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.modal-tab:hover {
+  color: var(--neon);
+}
+
+[data-theme="light"] .modal-tab:hover {
+  color: #db2777;
+}
+
+.modal-tab.active {
+  color: var(--neon);
+}
+
+[data-theme="light"] .modal-tab.active {
+  color: #db2777;
+}
+
+.modal-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--neon), var(--neon2));
+}
+
+/* Extra premium styling adjustments for light mode elements */
+[data-theme="light"] .mr-main {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  background: #ffffff;
+}
+
+[data-theme="light"] .resume-doc {
+  background: #ffffff !important;
+  color: #1e293b !important;
+}
+
+[data-theme="light"] .sec-title {
+  color: #0f172a;
 }

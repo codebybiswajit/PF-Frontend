@@ -32,8 +32,13 @@ export const authApi = {
     return res.data.user;
   },
 
-  updateProfile: async (id: string, data: Partial<User>): Promise<User> => {
-    const res = await api.put<User>(`/users/${id}/profile`, data);
+  updateProfile: async (id: string, data: Partial<User>): Promise<{ user: User }> => {
+    const res = await api.put<{ user: User }>(`/users/${id}/profile`, data);
+    return res.data;
+  },
+
+  getPublicPortfolio: async (slug: string): Promise<{ user: User }> => {
+    const res = await api.get<{ user: User }>(`/users/public/${slug}`);
     return res.data;
   },
 };

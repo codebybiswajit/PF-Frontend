@@ -1,5 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useAuth } from '../context/AuthContext';
+import { usePublicPortfolio } from '../context/PublicPortfolioContext';
 import { RESUME_DATA } from '../data/portfolioData';
 import type { ResumeExperience, ResumeProject, ResumeEducation, ResumeCertification } from '../types';
 
@@ -36,7 +38,7 @@ const ExperienceBlock: React.FC<{ exp: ResumeExperience; index: number }> = ({ e
       </div>
       {exp.summary && <p className="mr-exp-summary">{exp.summary}</p>}
       <ul className="mr-bullets">
-        {exp.bullets.map((b, i) => <li key={i}>{b}</li>)}
+        {(exp.bullets || []).map((b, i) => <li key={i}>{b}</li>)}
       </ul>
       {exp.tech && exp.tech.length > 0 && (
         <div className="mr-tag-row">
@@ -67,7 +69,7 @@ const ProjectBlock: React.FC<{ proj: ResumeProject; index: number }> = ({ proj, 
       </ul>
     )}
     <div className="mr-tag-row">
-      {proj.tech.map((t, i) => <span key={i} className="mr-tag mr-tag-pink">{t}</span>)}
+      {(proj.tech || []).map((t, i) => <span key={i} className="mr-tag mr-tag-pink">{t}</span>)}
     </div>
   </motion.div>
 );
@@ -100,7 +102,69 @@ const EducationBlock: React.FC<{ edu: ResumeEducation; index: number }> = ({ edu
 
 /* ─── Main Page ─────────────────────────────────────────────────── */
 const MyResumePage: React.FC = () => {
-  const r = RESUME_DATA;
+  const { user } = useAuth();
+  const { publicUser } = usePublicPortfolio();
+  const activeUser = publicUser || user;
+
+  // Dynamically map logged-in user to resume data format or fallback to default
+  const r = activeUser ? {
+    firstName: activeUser.firstName,
+    lastName: activeUser.lastName,
+    title: activeUser.title || 'Full Stack Developer',
+    tagline: activeUser.summary ? `Building systems that scale & experiences that delight.` : '',
+    contact: {
+      email: activeUser.email,
+      phone: activeUser.phone || '',
+      location: 'India',
+      website: '',
+      linkedin: activeUser.linkedin || '',
+      github: activeUser.github || '',
+      twitter: '',
+    },
+    summary: activeUser.summary || '',
+    skillGroups: [
+      {
+        category: 'Skills',
+        icon: '🔧',
+        skills: activeUser.skills ? activeUser.skills.split(',').map(s => s.trim()).filter(Boolean) : [],
+      }
+    ],
+    education: (activeUser.education || []).map(e => ({
+      degree: e.degree,
+      field: '',
+      institution: e.institution,
+      location: '',
+      start: e.start,
+      end: e.end,
+      gpa: e.gpa || '',
+      honors: '',
+      courses: [],
+    })),
+    experience: (activeUser.experience || []).map(e => ({
+      title: e.title,
+      company: e.company,
+      location: '',
+      type: 'Full-time' as const,
+      start: e.start,
+      end: e.end,
+      summary: '',
+      bullets: e.desc ? e.desc.split('\n').map(b => b.trim()).filter(Boolean) : [],
+      tech: [],
+    })),
+    projects: (activeUser.projects || []).map(p => ({
+      name: p.name,
+      tagline: '',
+      tech: p.tech ? p.tech.split(',').map(t => t.trim()).filter(Boolean) : [],
+      desc: p.desc,
+      repo: p.url || '',
+      highlights: [],
+    })),
+    certifications: [],
+    languages: [],
+    interests: [],
+    openToWork: true,
+    availableFrom: 'Immediately',
+  } : RESUME_DATA;
 
   return (
     <div className="mr-root" style={{ paddingTop: '80px' }}>
@@ -169,7 +233,7 @@ const MyResumePage: React.FC = () => {
             {r.contact.linkedin && <a href={`https://${r.contact.linkedin}`} target="_blank" rel="noopener noreferrer" className="mr-contact-item">🔗 {r.contact.linkedin}</a>}
             {r.contact.github   && <a href={`https://${r.contact.github}`}   target="_blank" rel="noopener noreferrer" className="mr-contact-item">💻 {r.contact.github}</a>}
             {r.contact.website  && <a href={r.contact.website}               target="_blank" rel="noopener noreferrer" className="mr-contact-item">🌐 {r.contact.website}</a>}
-            {r.contact.twitter  && <span className="mr-contact-item">🐦 {r.contact.twitter}</span>}
+            {r.contact?.twitter  && <span className="mr-contact-item">🐦 {r.contact?.twitter}</span>}
           </div>
         </div>
 

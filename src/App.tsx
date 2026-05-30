@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import ParticleBackground from './components/ParticleBackground';
@@ -27,26 +27,41 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   </>
 );
 
+import { applyThemeAndAccent } from './utils/theme';
+import { PublicPortfolioProvider } from './context/PublicPortfolioContext';
+import PublicPortfolioViewer from './pages/PublicPortfolioViewer';
+
 /* ── App ─────────────────────────────────────────────────────── */
-const App: React.FC = () => (
-  <Layout>
-    <Routes>
-      {/* Public */}
-      <Route path="/" element={<HomePage />} />
-      <Route path="/projects" element={<ProjectsPage />} />
-      <Route path="/about" element={<AboutPage />} />
-      <Route path="/signin" element={<SignInPage />} />
-      <Route path="/signup" element={<SignUpPage />} />
+const App: React.FC = () => {
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('portfolio_theme') || 'dark';
+    const savedAccent = localStorage.getItem('portfolio_accent') || 'classic';
+    applyThemeAndAccent(savedTheme, savedAccent);
+  }, []);
 
-      {/* Auth-gated (pages handle their own auth guard) */}
-      <Route path="/resume" element={<ResumePage />} />
-      <Route path="/my-resume" element={<MyResumePage />} />
-      <Route path="/chat" element={<ChatPage />} />
+  return (
+    <PublicPortfolioProvider>
+      <Layout>
+        <Routes>
+          {/* Public */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/portfolio/:slug" element={<PublicPortfolioViewer />} />
+          <Route path="/projects" element={<ProjectsPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/signin" element={<SignInPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
 
-      {/* Fallback — redirect to home */}
-      <Route path="*" element={<HomePage />} />
-    </Routes>
-  </Layout>
-);
+          {/* Auth-gated (pages handle their own auth guard) */}
+          <Route path="/resume" element={<ResumePage />} />
+          <Route path="/my-resume" element={<MyResumePage />} />
+          <Route path="/chat" element={<ChatPage />} />
+
+          {/* Fallback — redirect to home */}
+          <Route path="*" element={<HomePage />} />
+        </Routes>
+      </Layout>
+    </PublicPortfolioProvider>
+  );
+};
 
 export default App;
