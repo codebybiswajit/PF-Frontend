@@ -33,14 +33,6 @@ const getTimePhrases = (userTitle?: string): string[] => {
 
   return base;
 };
-
-const STATS = [
-  { num: '3+', label: 'Major Projects' },
-  { num: '5+', label: 'Years Coding' },
-  { num: '15+', label: 'Technologies' },
-  { num: '100%', label: 'Passion' },
-];
-
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
   visible: (delay: number) => ({

@@ -169,7 +169,7 @@ const SettingsSidebar: React.FC<SettingsSidebarProps> = ({ isOpen, onClose, defa
         <div className="sidebar-content">
 
           {/* ─── Profile Tab ─── */}
-          {activeTab === 'profile' && (
+          {(activeTab === 'profile' && user != null) && (
             <div className="sidebar-section">
               {/* User snapshot */}
               <div className="sidebar-user-card">

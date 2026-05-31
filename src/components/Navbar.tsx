@@ -17,7 +17,7 @@ const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarTab, setSidebarTab] = useState<'profile' | 'personalize'>('profile');
+  const [sidebarTab] = useState<'profile' | 'personalize'>('profile');
 
   // isAuthenticated: user is logged in AND not viewing someone else's public portfolio
   const isAuthenticated = !!user && !publicUser;

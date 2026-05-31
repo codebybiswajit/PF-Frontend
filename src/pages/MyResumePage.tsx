@@ -172,8 +172,10 @@ const MyResumePage: React.FC = () => {
     interests: activeUser.interests || [],
     openToWork: activeUser.openToWork !== undefined ? activeUser.openToWork : true,
     availableFrom: activeUser.availableFrom || 'Immediately',
-  } : null;
-
+  } : founderUser;
+  if (r == null) {
+    return
+  }
   return (
     <div className="mr-root" style={{ paddingTop: '80px' }}>
       {/* ── Print styles ── */}
