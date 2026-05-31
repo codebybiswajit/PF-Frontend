@@ -2,7 +2,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { usePublicPortfolio } from '../context/PublicPortfolioContext';
-import { RESUME_DATA } from '../data/portfolioData';
 import type { ResumeExperience, ResumeProject, ResumeEducation, ResumeCertification } from '../types';
 
 /* ─── tiny helpers ─────────────────────────────────────────────── */
@@ -103,68 +102,77 @@ const EducationBlock: React.FC<{ edu: ResumeEducation; index: number }> = ({ edu
 /* ─── Main Page ─────────────────────────────────────────────────── */
 const MyResumePage: React.FC = () => {
   const { user } = useAuth();
-  const { publicUser } = usePublicPortfolio();
-  const activeUser = publicUser || user;
+  const { publicUser, founderUser } = usePublicPortfolio();
+  // publicUser = viewing someone else's public portfolio
+  // user = the logged-in owner viewing their own resume
+  // fallback to static RESUME_DATA when neither is present
+  const activeUser = publicUser || user || founderUser;
 
   // Dynamically map logged-in user to resume data format or fallback to default
   const r = activeUser ? {
     firstName: activeUser.firstName,
     lastName: activeUser.lastName,
     title: activeUser.title || 'Full Stack Developer',
-    tagline: activeUser.summary ? `Building systems that scale & experiences that delight.` : '',
+    tagline: activeUser.tagline || (activeUser.summary ? `Building systems that scale & experiences that delight.` : ''),
     contact: {
-      email: activeUser.email,
-      phone: activeUser.phone || '',
-      location: 'India',
-      website: '',
-      linkedin: activeUser.linkedin || '',
-      github: activeUser.github || '',
-      twitter: '',
+      email: activeUser.contact?.email || activeUser.email,
+      phone: activeUser.contact?.phone || activeUser.phone || '',
+      location: activeUser.contact?.location || 'India',
+      website: activeUser.contact?.website || '',
+      linkedin: activeUser.contact?.linkedin || activeUser.linkedin || '',
+      github: activeUser.contact?.github || activeUser.github || '',
+      twitter: activeUser.contact?.twitter || '',
     },
     summary: activeUser.summary || '',
-    skillGroups: [
-      {
-        category: 'Skills',
-        icon: '🔧',
-        skills: activeUser.skills ? activeUser.skills.split(',').map(s => s.trim()).filter(Boolean) : [],
-      }
-    ],
+    skillGroups: activeUser.skillGroups && activeUser.skillGroups.length > 0
+      ? activeUser.skillGroups
+      : [
+        {
+          category: 'Skills',
+          icon: '🔧',
+          skills: activeUser.skills ? activeUser.skills.split(',').map(s => s.trim()).filter(Boolean) : [],
+        }
+      ],
     education: (activeUser.education || []).map(e => ({
       degree: e.degree,
-      field: '',
+      field: e.field || '',
       institution: e.institution,
-      location: '',
+      location: e.location || '',
       start: e.start,
       end: e.end,
       gpa: e.gpa || '',
-      honors: '',
-      courses: [],
+      honors: e.honors || '',
+      courses: e.courses || [],
     })),
     experience: (activeUser.experience || []).map(e => ({
       title: e.title,
       company: e.company,
-      location: '',
-      type: 'Full-time' as const,
+      location: e.location || '',
+      type: (e.type || 'Full-time') as any,
       start: e.start,
       end: e.end,
-      summary: '',
-      bullets: e.desc ? e.desc.split('\n').map(b => b.trim()).filter(Boolean) : [],
-      tech: [],
+      summary: e.summary || '',
+      bullets: e.bullets && e.bullets.length > 0
+        ? e.bullets
+        : (e.desc ? e.desc.split('\n').map(b => b.trim()).filter(Boolean) : []),
+      tech: e.tech || [],
     })),
     projects: (activeUser.projects || []).map(p => ({
       name: p.name,
-      tagline: '',
-      tech: p.tech ? p.tech.split(',').map(t => t.trim()).filter(Boolean) : [],
+      tagline: p.tagline || '',
+      tech: Array.isArray(p.tech)
+        ? p.tech
+        : (p.tech ? p.tech.split(',').map(t => t.trim()).filter(Boolean) : []),
       desc: p.desc,
-      repo: p.url || '',
-      highlights: [],
+      repo: p.repo || p.url || '',
+      highlights: p.highlights || [],
     })),
-    certifications: [],
-    languages: [],
-    interests: [],
-    openToWork: true,
-    availableFrom: 'Immediately',
-  } : RESUME_DATA;
+    certifications: activeUser.certifications || [],
+    languages: activeUser.languages || [],
+    interests: activeUser.interests || [],
+    openToWork: activeUser.openToWork !== undefined ? activeUser.openToWork : true,
+    availableFrom: activeUser.availableFrom || 'Immediately',
+  } : null;
 
   return (
     <div className="mr-root" style={{ paddingTop: '80px' }}>
@@ -227,13 +235,13 @@ const MyResumePage: React.FC = () => {
             </div>
           </div>
           <div className="mr-contact">
-            {r.contact.email    && <a href={`mailto:${r.contact.email}`}    className="mr-contact-item">✉ {r.contact.email}</a>}
-            {r.contact.phone    && <span className="mr-contact-item">📞 {r.contact.phone}</span>}
+            {r.contact.email && <a href={`mailto:${r.contact.email}`} className="mr-contact-item">✉ {r.contact.email}</a>}
+            {r.contact.phone && <span className="mr-contact-item">📞 {r.contact.phone}</span>}
             {r.contact.location && <span className="mr-contact-item">📍 {r.contact.location}</span>}
             {r.contact.linkedin && <a href={`https://${r.contact.linkedin}`} target="_blank" rel="noopener noreferrer" className="mr-contact-item">🔗 {r.contact.linkedin}</a>}
-            {r.contact.github   && <a href={`https://${r.contact.github}`}   target="_blank" rel="noopener noreferrer" className="mr-contact-item">💻 {r.contact.github}</a>}
-            {r.contact.website  && <a href={r.contact.website}               target="_blank" rel="noopener noreferrer" className="mr-contact-item">🌐 {r.contact.website}</a>}
-            {r.contact?.twitter  && <span className="mr-contact-item">🐦 {r.contact?.twitter}</span>}
+            {r.contact.github && <a href={`https://${r.contact.github}`} target="_blank" rel="noopener noreferrer" className="mr-contact-item">💻 {r.contact.github}</a>}
+            {r.contact.website && <a href={r.contact.website} target="_blank" rel="noopener noreferrer" className="mr-contact-item">🌐 {r.contact.website}</a>}
+            {r.contact?.twitter && <span className="mr-contact-item">🐦 {r.contact?.twitter}</span>}
           </div>
         </div>
 

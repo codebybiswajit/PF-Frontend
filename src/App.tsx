@@ -37,6 +37,21 @@ const App: React.FC = () => {
     const savedTheme = localStorage.getItem('portfolio_theme') || 'dark';
     const savedAccent = localStorage.getItem('portfolio_accent') || 'classic';
     applyThemeAndAccent(savedTheme, savedAccent);
+
+    // Restore font personalization
+    const savedFontFamily = localStorage.getItem('portfolio_font_family') || 'Rajdhani';
+    const savedFontSize = Number(localStorage.getItem('portfolio_font_size') || 16);
+    const fontMap: Record<string, string> = {
+      'Rajdhani': "'Rajdhani', sans-serif",
+      'Inter': "'Inter', sans-serif",
+      'Orbitron': "'Orbitron', monospace",
+      'Plus Jakarta Sans': "'Plus Jakarta Sans', sans-serif",
+      'Share Tech Mono': "'Share Tech Mono', monospace",
+    };
+    const fontValue = fontMap[savedFontFamily] || "'Rajdhani', sans-serif";
+    document.documentElement.style.setProperty('--font-family', fontValue);
+    document.documentElement.style.setProperty('--font-base', `${savedFontSize}px`);
+    document.documentElement.style.fontSize = `${savedFontSize}px`;
   }, []);
 
   return (

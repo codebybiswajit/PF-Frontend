@@ -95,7 +95,7 @@ const ResumeDoc: React.FC<ResumeDocProps> = ({ user }) => {
                 <span className="resume-item-title">{esc(p.name)}</span>
                 {p.url && <span className="resume-item-date" style={{ color: '#0a5c8a' }}>{esc(p.url)}</span>}
               </div>
-              {p.tech && <div className="resume-item-sub">Tech: {esc(p.tech)}</div>}
+              {p.tech && <div className="resume-item-sub">Tech: {esc(Array.isArray(p.tech) ? p.tech.join(', ') : p.tech)}</div>}
               {p.desc && <div className="resume-item-desc">{esc(p.desc)}</div>}
             </div>
           ))}

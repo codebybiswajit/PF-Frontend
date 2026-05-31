@@ -3,22 +3,33 @@ import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import { RESUME_DATA } from '../data/portfolioData';
-import type { 
-  ResumeData, 
-  ResumeEducation, 
-  ResumeExperience, 
-  ResumeProject, 
+import { useAuth } from '../context/AuthContext';
+import { usePublicPortfolio } from '../context/PublicPortfolioContext';
+import { FOUNDER_USER_ID } from '../data/portfolioData';
+import type {
+  ResumeEducation,
+  ResumeExperience,
+  ResumeProject,
   ResumeSkillGroup,
   ResumeCertification,
-  ResumeLanguage 
+  ResumeLanguage
 } from '../types';
 
 const FoundersResumePage: React.FC = () => {
   const navigate = useNavigate();
+  const { user, updateUser } = useAuth();
+  const { founderUser } = usePublicPortfolio();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState<'basic-contact' | 'skills-interests' | 'exp-certs' | 'edu-projects'>('basic-contact');
+
+  const TABS: ('basic-contact' | 'skills-interests' | 'exp-certs' | 'edu-projects')[] = [
+    'basic-contact',
+    'skills-interests',
+    'exp-certs',
+    'edu-projects'
+  ];
+  const currentTabIndex = TABS.indexOf(activeTab);
 
   // Basic Info Form States
   const [firstName, setFirstName] = useState('');
@@ -44,65 +55,96 @@ const FoundersResumePage: React.FC = () => {
   const [interests, setInterests] = useState('');
 
   // Complex Sub-document States (Lists - strictly mapped without IDs)
-  const [skills, setSkills] = useState<ResumeSkillGroup[]>([]);
+  const [skills, setSkills] = useState<(ResumeSkillGroup & { skillsString?: string })[]>([]);
   const [languages, setLanguages] = useState<ResumeLanguage[]>([]);
   const [certifications, setCertifications] = useState<ResumeCertification[]>([]);
-  const [eduList, setEduList] = useState<ResumeEducation[]>([]);
+  const [eduList, setEduList] = useState<(ResumeEducation & { coursesString?: string })[]>([]);
   const [expList, setExpList] = useState<(ResumeExperience & { desc?: string })[]>([]);
-  const [projList, setProjList] = useState<ResumeProject[]>([]);
+  const [projList, setProjList] = useState<(ResumeProject & { techString?: string })[]>([]);
 
-  // Initialize all fields strictly and only from RESUME_DATA (no user fallback)
+  // Redirect logged-in users to /my-resume
   useEffect(() => {
-    const source = RESUME_DATA;
+    if (user) {
+      toast.info('Logged-in users can update their profiles directly via the Profile Modal! Redirecting... 📄');
+      navigate('/my-resume');
+    }
+  }, [user, navigate]);
 
-    // Basic
-    setFirstName(source.firstName || '');
-    setLastName(source.lastName || '');
-    setTitle(source.title || '');
-    setTagline(source.tagline || '');
-    setSummary(source.summary || '');
+  // Initialize form fields strictly from Dynamic DB record (user || founderUser) or seed fallback from RESUME_DATA
+  useEffect(() => {
+    const activeSource = user || founderUser;
+    const hasDbData = activeSource && (activeSource.summary || activeSource.title || (activeSource.experience && activeSource.experience.length > 0) || (activeSource.projects && activeSource.projects.length > 0));
+    const source = hasDbData ? activeSource :null;
 
-    // Contact
-    setEmail(source.contact?.email || '');
-    setPhone(source.contact?.phone || '');
-    setLocationState(source.contact?.location || '');
-    setWebsite(source.contact?.website || '');
-    setLinkedin(source.contact?.linkedin || '');
-    setGithub(source.contact?.github || '');
-    setTwitter(source.contact?.twitter || '');
+    if (source) {
+      // Basic
+      setFirstName(source.firstName || '');
+      setLastName(source.lastName || '');
+      setTitle(source.title || '');
+      setTagline(source.tagline || '');
+      setSummary(source.summary || '');
 
-    // Preferences
-    setOpenToWork(!!source.openToWork);
-    setAvailableFrom(source.availableFrom || '');
+      // Contact
+      const contactSource = (source.contact || {}) as any;
+      const flatSource = source as any;
+      setEmail(contactSource.email || flatSource.email || '');
+      setPhone(contactSource.phone || flatSource.phone || '');
+      setLocationState(contactSource.location || flatSource.location || '');
+      setWebsite(contactSource.website || flatSource.website || '');
+      setLinkedin(contactSource.linkedin || flatSource.linkedin || '');
+      setGithub(contactSource.github || flatSource.github || '');
+      setTwitter(contactSource.twitter || flatSource.twitter || '');
 
-    // Interests
-    setInterests((source.interests || []).join(', '));
+      // Preferences
+      setOpenToWork(!!source.openToWork);
+      setAvailableFrom(source.availableFrom || '');
 
-    // Lists
-    setSkills(source.skillGroups || []);
-    setLanguages(source.languages || []);
-    setCertifications(source.certifications || []);
-    setEduList(source.education || []);
-    setExpList((source.experience || []).map((e: any) => ({
-      ...e,
-      desc: e.desc || (e.bullets || []).join('\n')
-    })));
-    setProjList(source.projects || []);
+      // Interests
+      setInterests(Array.isArray(source.interests) ? source.interests.join(', ') : '');
+
+      // Lists
+      setSkills(
+        (source.skillGroups || []).map((s: any) => ({
+          ...s,
+          skillsString: Array.isArray(s.skills) ? s.skills.join(', ') : ''
+        }))
+      );
+      setLanguages(source.languages || []);
+      setCertifications(source.certifications || []);
+
+      setEduList(
+        (source.education || []).map((e: any) => ({
+          ...e,
+          coursesString: Array.isArray(e.courses) ? e.courses.join(', ') : ''
+        }))
+      );
+      setExpList(
+        (source.experience || []).map((e: any) => ({
+          ...e,
+          desc: e.desc || (e.bullets || []).join('\n')
+        }))
+      );
+      setProjList(
+        (source.projects || []).map((p: any) => ({
+          ...p,
+          techString: Array.isArray(p.tech) ? p.tech.join(', ') : (typeof p.tech === 'string' ? p.tech : '')
+        }))
+      );
+    }
     setError('');
-  }, []);
+  }, [user, founderUser]);
 
   // Skill Group Helpers (Index Based)
   const addSkillGroup = () =>
     setSkills([
       ...skills,
-      { category: '', skills: [] }
+      { category: '', skills: [], skillsString: '' }
     ]);
   const removeSkillGroup = (index: number) => setSkills(skills.filter((_, i) => i !== index));
   const updateSkillGroup = (index: number, field: keyof ResumeSkillGroup, value: any) =>
     setSkills(skills.map((s, i) => (i === index ? { ...s, [field]: value } : s)));
   const updateSkillGroupSkills = (index: number, commaString: string) => {
-    const list = commaString.split(',').map(s => s.trim()).filter(Boolean);
-    setSkills(skills.map((s, i) => (i === index ? { ...s, skills: list } : s)));
+    setSkills(skills.map((s, i) => (i === index ? { ...s, skillsString: commaString } : s)));
   };
 
   // Language Helpers (Index Based)
@@ -129,11 +171,14 @@ const FoundersResumePage: React.FC = () => {
   const addEdu = () =>
     setEduList([
       ...eduList,
-      { degree: '', institution: '', start: '', end: '', gpa: '' }
+      { degree: '', institution: '', start: '', end: '', gpa: '', field: '', location: '', honors: '', courses: [], coursesString: '' }
     ]);
   const removeEdu = (index: number) => setEduList(eduList.filter((_, i) => i !== index));
-  const updateEdu = (index: number, field: keyof ResumeEducation, value: string) =>
+  const updateEdu = (index: number, field: keyof ResumeEducation, value: any) =>
     setEduList(eduList.map((e, i) => (i === index ? { ...e, [field]: value } : e)));
+  const updateEduCourses = (index: number, commaString: string) => {
+    setEduList(eduList.map((e, i) => (i === index ? { ...e, coursesString: commaString } : e)));
+  };
 
   // Experience Helpers (Index Based)
   const addExp = () =>
@@ -149,11 +194,14 @@ const FoundersResumePage: React.FC = () => {
   const addProj = () =>
     setProjList([
       ...projList,
-      { name: '', tech: [], desc: '' }
+      { name: '', tech: [], techString: '', desc: '' }
     ]);
   const removeProj = (index: number) => setProjList(projList.filter((_, i) => i !== index));
   const updateProj = (index: number, field: keyof ResumeProject, value: any) =>
     setProjList(projList.map((p, i) => (i === index ? { ...p, [field]: value } : p)));
+  const updateProjTech = (index: number, commaString: string) => {
+    setProjList(projList.map((p, i) => (i === index ? { ...p, techString: commaString } : p)));
+  };
 
   const validateForm = () => {
     if (!firstName || !lastName || !title || !summary) {
@@ -171,7 +219,8 @@ const FoundersResumePage: React.FC = () => {
 
     setLoading(true);
     try {
-       const dbPayload: ResumeData = {
+      const dbPayload: any = {
+        userId: FOUNDER_USER_ID || undefined,
         firstName,
         lastName,
         title,
@@ -189,11 +238,11 @@ const FoundersResumePage: React.FC = () => {
         openToWork,
         availableFrom: availableFrom || undefined,
         interests: interests.split(',').map(i => i.trim()).filter(Boolean),
-        skillGroups: skills.map((s: ResumeSkillGroup) => ({
+        skillGroups: skills.map((s: any) => ({
           category: s.category,
-          skills: s.skills
+          skills: s.skillsString ? s.skillsString.split(',').map((str: string) => str.trim()).filter(Boolean) : (s.skills || [])
         })),
-        languages: languages.map((l: ResumeLanguage)=> ({
+        languages: languages.map((l: ResumeLanguage) => ({
           language: l.language,
           proficiency: l.proficiency
         })),
@@ -202,41 +251,38 @@ const FoundersResumePage: React.FC = () => {
           issuer: c.issuer,
           date: c.date
         })),
-        education: eduList.map((e: ResumeEducation) => ({
-          degree: e.degree,
-          field: e.field || '',
-          institution: e.institution,
-          location: e.location || '',
-          start: e.start,
-          end: e.end,
-          gpa: e.gpa || '',
-          honors: e.honors || '',
-          courses: e.courses || []
+        education: eduList.map((ed: any) => ({
+          degree: ed.degree,
+          field: ed.field || '',
+          institution: ed.institution,
+          location: ed.location || '',
+          start: ed.start,
+          end: ed.end,
+          gpa: ed.gpa || '',
+          honors: ed.honors || '',
+          courses: ed.coursesString ? ed.coursesString.split(',').map((str: string) => str.trim()).filter(Boolean) : (ed.courses || [])
         })),
-        experience: expList.map((e) => ({
-          title: e.title,
-          company: e.company,
-          location: e.location || '',
-          type: e.type || 'Full-time',
-          start: e.start,
-          end: e.end,
-          bullets: e.desc ? e.desc.split('\n').map((b: string) => b.trim()).filter(Boolean) : []
+        experience: expList.map((ex) => ({
+          title: ex.title,
+          company: ex.company,
+          location: ex.location || '',
+          type: ex.type || 'Full-time',
+          start: ex.start,
+          end: ex.end,
+          bullets: ex.desc ? ex.desc.split('\n').map((b: string) => b.trim()).filter(Boolean) : []
         })),
-        projects: projList.map((p: ResumeProject) => {
-          const techArray = typeof p.tech === 'string'
-            ? (p.tech as string).split(',').map(t => t.trim()).filter(Boolean)
-            : p.tech;
-          return {
-            name: p.name,
-            tech: techArray,
-            desc: p.desc,
-            url: p.url || ''
-          };
-        })
+        projects: projList.map((pr: any) => ({
+          name: pr.name,
+          tech: pr.techString ? pr.techString.split(',').map((str: string) => str.trim()).filter(Boolean) : (Array.isArray(pr.tech) ? pr.tech : []),
+          desc: pr.desc,
+          url: pr.url || ''
+        }))
       };
 
-      await api.post('/api/resume', dbPayload);
-      // Local React Context Sync
+      const res = await api.post('resume', dbPayload);
+      if (res.data && res.data.resume) {
+        updateUser(res.data.resume);
+      }
 
       toast.success('Resume details saved successfully! ✨', { autoClose: 2000 });
       navigate('/my-resume');
@@ -301,7 +347,7 @@ const FoundersResumePage: React.FC = () => {
           )}
 
           <form onSubmit={handleSave}>
-            
+
             {/* TAB 1: BASIC & CONTACT */}
             {activeTab === 'basic-contact' && (
               <div className="row g-4">
@@ -390,22 +436,22 @@ const FoundersResumePage: React.FC = () => {
                             <div className="row g-3">
                               <div className="col-md-6">
                                 <label className="pf-label">Category Name</label>
-                                <input 
-                                  className="pf-input" 
-                                  value={s.category} 
+                                <input
+                                  className="pf-input"
+                                  value={s.category}
                                   onChange={(ev) => {
                                     updateSkillGroup(index, 'category', ev.target.value);
-                                  }} 
-                                  placeholder="e.g. Frontend" 
+                                  }}
+                                  placeholder="e.g. Frontend"
                                 />
                               </div>
                               <div className="col-md-6">
                                 <label className="pf-label">Skills (comma-separated)</label>
-                                <input 
-                                  className="pf-input" 
-                                  value={Array.isArray(s.skills) ? s.skills.join(', ') : s.skills} 
-                                  onChange={(ev) => updateSkillGroupSkills(index, ev.target.value)} 
-                                  placeholder="React, Vue, HTML, CSS" 
+                                <input
+                                  className="pf-input"
+                                  value={s.skillsString !== undefined ? s.skillsString : (Array.isArray(s.skills) ? s.skills.join(', ') : '')}
+                                  onChange={(ev) => updateSkillGroupSkills(index, ev.target.value)}
+                                  placeholder="React, Vue, HTML, CSS"
                                 />
                               </div>
                             </div>
@@ -454,7 +500,7 @@ const FoundersResumePage: React.FC = () => {
                 {/* PREFERENCES & INTERESTS */}
                 <div className="col-md-6" style={{ marginTop: '2rem' }}>
                   <span className="pf-label" style={{ fontSize: '1.1rem', color: 'var(--neon2)', display: 'block', marginBottom: '1rem' }}>Interests & Preferences</span>
-                  
+
                   <div className="mb-3">
                     <label className="pf-label">Interests (comma-separated)</label>
                     <input className="pf-input" value={interests} onChange={(e) => setInterests(e.target.value)} placeholder="Open Source, Competitive Programming, Tech Blogging" />
@@ -467,13 +513,13 @@ const FoundersResumePage: React.FC = () => {
                         <small style={{ color: 'var(--muted)', fontSize: '0.75rem' }}>Display the "Open to Work" badge on your resume.</small>
                       </div>
                       <div className="form-check form-switch">
-                        <input 
-                          className="form-check-input" 
-                          type="checkbox" 
-                          id="openToWorkSelect" 
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id="openToWorkSelect"
                           checked={openToWork}
                           onChange={(e) => setOpenToWork(e.target.checked)}
-                          style={{ width: '2.5em', height: '1.2em', cursor: 'pointer' }} 
+                          style={{ width: '2.5em', height: '1.2em', cursor: 'pointer' }}
                         />
                       </div>
                     </div>
@@ -492,7 +538,7 @@ const FoundersResumePage: React.FC = () => {
             {/* TAB 3: EXPERIENCE & CERTIFICATIONS */}
             {activeTab === 'exp-certs' && (
               <div className="row g-4">
-                
+
                 {/* EXPERIENCE SECTION */}
                 <div className="col-lg-7">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
@@ -634,6 +680,15 @@ const FoundersResumePage: React.FC = () => {
                             <label className="pf-label">GPA</label>
                             <input className="pf-input" value={e.gpa || ''} onChange={(ev) => updateEdu(index, 'gpa', ev.target.value)} placeholder="3.9/4.0" />
                           </div>
+                          <div className="col-12 mt-2">
+                            <label className="pf-label">Relevant Courses (comma-separated)</label>
+                            <input
+                              className="pf-input"
+                              value={e.coursesString !== undefined ? e.coursesString : (Array.isArray(e.courses) ? e.courses.join(', ') : '')}
+                              onChange={(ev) => updateEduCourses(index, ev.target.value)}
+                              placeholder="e.g. Algorithms, DBMS, Operating Systems"
+                            />
+                          </div>
                         </div>
                       </div>
                     ))
@@ -664,7 +719,12 @@ const FoundersResumePage: React.FC = () => {
                           </div>
                           <div className="col-md-6">
                             <label className="pf-label">Tech Stack (comma-separated)</label>
-                            <input className="pf-input" value={Array.isArray(p.tech) ? p.tech.join(', ') : p.tech} onChange={(ev) => updateProj(index, 'tech', ev.target.value)} placeholder="React, Vite, OpenAI" />
+                            <input
+                              className="pf-input"
+                              value={p.techString !== undefined ? p.techString : (Array.isArray(p.tech) ? p.tech.join(', ') : '')}
+                              onChange={(ev) => updateProjTech(index, ev.target.value)}
+                              placeholder="React, Vite, OpenAI"
+                            />
                           </div>
                         </div>
                         <div className="mb-2">
@@ -685,11 +745,44 @@ const FoundersResumePage: React.FC = () => {
             <hr className="section-divider" style={{ margin: '2.5rem 0' }} />
 
             {/* Action Buttons */}
-            <div style={{ display: 'flex', gap: '1.25rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-              <button type="button" className="btn-secondary btn-founders-action" onClick={() => navigate('/my-resume')}>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', flexWrap: 'wrap', alignItems: 'center' }}>
+              <button
+                type="button"
+                className="btn-secondary btn-founders-action"
+                onClick={() => navigate('/my-resume')}
+                style={{ padding: '0.6rem 1.5rem', fontWeight: 600 }}
+              >
                 Cancel
               </button>
-              <button type="submit" className="btn-pink btn-founders-action" disabled={loading}>
+
+              {currentTabIndex > 0 && (
+                <button
+                  type="button"
+                  className="btn-neon btn-founders-action"
+                  onClick={() => setActiveTab(TABS[currentTabIndex - 1])}
+                  style={{ padding: '0.6rem 1.5rem', fontWeight: 600 }}
+                >
+                  ← Back
+                </button>
+              )}
+
+              {currentTabIndex < TABS.length - 1 && (
+                <button
+                  type="button"
+                  className="btn-yellow btn-founders-action"
+                  onClick={() => setActiveTab(TABS[currentTabIndex + 1])}
+                  style={{ padding: '0.6rem 1.5rem', fontWeight: 600, color: 'var(--neon3)' }}
+                >
+                  Next →
+                </button>
+              )}
+
+              <button
+                type="submit"
+                className="btn-pink btn-founders-action"
+                disabled={loading}
+                style={{ padding: '0.6rem 1.8rem', fontWeight: 600 }}
+              >
                 {loading ? 'Saving...' : 'Save & Update Resume'}
               </button>
             </div>

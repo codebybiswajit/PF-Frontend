@@ -60,6 +60,8 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
   },
 ];
 
+export const FOUNDER_USER_ID = import.meta.env.VITE_FOUNDER_USER_ID || '6a1be56f3566ee91714c1299';
+
 export const SITE_INFO = {
   founderName: 'Biswajit Mohapatra',
   founderTitle: 'Full Stack Developer & Data Engineer',
@@ -82,7 +84,7 @@ export const PUBLIC_CHAT_QA: { patterns: string[]; answer: string }[] = [
     answer: `The founder of this website is **Biswajit Mohapatra** — a Full Stack Developer & Data Engineer with expertise in React, Node.js, Python, and data pipelines. Biswajit built this portfolio platform to showcase his work and allow others to generate their own ATS-friendly resumes!`,
   },
   {
-    patterns: ['what can', 'what does', 'features', 'capabilities', 'do'],
+    patterns: ['features', 'capabilities', 'do'],
     answer: `This portfolio platform lets you:\n\n• 🚀 **Browse Biswajits's projects** — E-Commerce, Hospital Management, Web Scraper\n• 📄 **Generate your own ATS resume** — Sign up and fill in your details\n• 🤖 **Chat with AI** — Ask anything about the portfolio or tech\n• 🔐 **Authenticated experience** — Log in to access your personalized resume and full AI chat`,
   },
   {
@@ -106,183 +108,3 @@ export const PUBLIC_CHAT_QA: { patterns: string[]; answer: string }[] = [
     answer: `Hey there! 👋 I'm Biswajits's AI assistant. I can answer questions about this portfolio, Biswajit's projects, tech stack, or how the site works — all without you needing to log in! Ask me anything.`,
   },
 ];
-
-export const RESUME_DATA: ResumeData = {
-  firstName: 'Biswajit',
-  lastName: 'Mohapatra',
-  title: 'Full Stack Developer & Data Engineer',
-
-  contact: {
-    email: 'biswajitmohapatra447@example.com',
-    phone: '+91 8018035461',
-    location: 'Bhubaneswar, Odisha, India',
-    website: 'biswajit-mohapatra-portfolio.onrender.com',
-    linkedin: 'linkedin.com/in/biswajitmohapatra1',
-    github: 'github.com/codebybiswajit',
-    // twitter: '@biswajit_dev',
-  },
-
-  summary:
-    'Passionate Full Stack Developer & Data Engineer with 1.55+ years of experience ' +
-    'building production-grade web applications and distributed data systems. ' +
-    'Skilled across the entire stack — from pixel-perfect React UIs to robust ' +
-    'Node.js APIs, MongoDB schemas data pipelines. ' +
-    'high-throughput scraping engines, and scalable e-commerce platforms.',
-
-  skillGroups: [
-    {
-      category: 'Frontend',
-      icon: '🎨',
-      skills: ['React 20', 'Next.js', 'TypeScript', 'CSS / Tailwind', 'Framer Motion', 'Bootstrap'],
-    },
-    {
-      category: 'Backend',
-      icon: '⚙️',
-      skills: ['Node.js', 'Express', 'Python'],
-    },
-    {
-      category: 'Databases',
-      icon: '🗄️',
-      skills: ['MongoDB', 'MySQL'],
-    },
-    {
-      category: 'Data & Scraping',
-      icon: '📊',
-      skills: ['Selenium', 'BeautifulSoup'],
-    },
-    {
-      category: 'DevOps & Cloud',
-      icon: '☁️',
-      skills: ['GitHub Actions'],
-    },
-    {
-      category: 'Tools & Others',
-      icon: '🔧',
-      skills: ['Git', 'Stripe API', 'JWT / OAuth2', 'WebSockets', 'Linux'],
-    },
-  ],
-
-  education: [
-    {
-      degree: 'Bachelor of Technology',
-      field: 'Computer Science & Engineering',
-      institution: 'Nalanda institute of technology',
-      location: 'Bhubaneswar, Odisha',
-      start: '2021',
-      end: '2025',
-      gpa: '8.06 / 10',
-      honors: 'First Class with Distinction',
-      courses: [
-        'Data Structures & Algorithms',
-        'Database Management Systems',
-        'Computer Networks',
-        'Operating Systems',
-        'Software Engineering',
-        'Computer Organization and Architecture',
-      ],
-    },
-  ],
-
-  experience: [
-    {
-      title: 'Full Stack Developer',
-      company: 'Capsitech Software Solution Pvt. Ltd.',
-      location: 'Jodhpur, Rajasthan, India',
-      type: 'Full-time',
-      start: 'JUN 2026',
-      end: 'Present',
-      summary: 'Working on the UK tax filing system in collaboration with the Acting Office and HMRC.',
-      bullets: [
-        "Integrated secure bank connection into SA100 data requests, enabling automated retrieval of financial records for individual tax filings.",
-        "Engineered enhancements to the UK Individual (SA100) and Partnership (SA800) tax systems within the Acting Office, improving accuracy and compliance workflows.",
-        "Developed and optimized P11D data request functionality, streamlining employer reporting of employee benefits and expenses.",
-        "Collaborated with HMRC and the Acting Office to modernize tax filing processes, reducing manual intervention and strengthening system reliability.",
-        "Implemented microservice architecture for both frontend and backend, improving scalability, enabling independent deployments, and reducing system downtime."
-      ],
-      tech: ['React', 'Type Script', 'ASP.Net Core', 'MongoDB', 'Azure', 'Fluent UI', 'Azure Blob Storage', 'X-Unit Testing .Net', 'Jest React Testing Library'],
-    },
-    {
-      title: 'Python Developer Intern',
-      company: 'CodeSoft',
-      location: 'Remote',
-      type: 'Internship',
-      start: 'OCT 2023',
-      end: 'NOV 2023',
-      bullets: [
-        'Built real-time monitoring dashboards using Python to track crawler health, proxy rotation, and data quality metrics.',
-        'Reduced data duplication by 35% with BeautifulSoup-powered parsing and Python-based deduplication logic across consumer pipelines.'
-      ],
-      tech: ['Python', 'BeautifulSoup'],
-    },
-  ],
-
-  projects: [
-    {
-      name: 'E-Commerce Platform',
-      tagline: 'Production-grade shopping platform with real-time inventory & payments',
-      tech: ['React', 'Node.js', 'MongoDB', 'Stripe', 'Redis'],
-      desc: 'Full-stack e-commerce solution with JWT/OAuth2 auth, Elasticsearch product search, persistent Redis cart, Stripe payments, and a real-time admin dashboard.',
-      repo: 'github.com/biswajitmohapatra/ecommerce',
-      highlights: [
-        'Introduced a basket feature tailored for organic vegetables, improving user convenience and boosting repeat purchases.',
-        'Implemented analytics to identify the most frequently purchased products, helping users make informed buying decisions and aiding inventory planning.',
-        'Designed a review‑based ranking system where top‑rated products surface first, increasing customer trust and engagement.',
-        'Enhanced checkout experience with multi‑currency support and automated refunds, ensuring seamless transactions across regions.',
-      ],
-    },
-    {
-      name: 'Hospital Management System',
-      // tagline: 'HIPAA-compliant EHR & operations platform for healthcare providers',
-      tech: ['Node.js', 'Express', 'React', 'MySQL', 'Redis', 'WebSockets'],
-      desc: 'End-to-end hospital operations platform: patient records (EHR), smart appointment scheduling, automated billing & insurance claims, lab integrations, and HIPAA-grade security.',
-      repo: 'github.com/biswajitmohapatra/hms',
-      highlights: [
-        'End-to-end AES-256 encryption on all PHI data',
-        'Real-time appointment notifications via WebSockets',
-        'Supports 50+ concurrent doctors and 500+ daily patient records',
-      ],
-    },
-    {
-      name: 'Python Web Scraping Engine',
-      tagline: 'Distributed scraping framework with anti-detection & analytics pipeline', // optional
-      tech: ['Python', 'Scrapy', 'Selenium', 'Playwright', 'Kafka', 'MongoDB', 'Redis', 'Grafana'],
-      desc: 'Multi-node Scrapy cluster with Kafka queue, proxy rotation, CAPTCHA solving, request fingerprint randomization, and a real-time Grafana monitoring dashboard.',
-      repo: 'github.com/biswajitmohapatra/scraper', // optional — TODO: update
-      highlights: [
-        'Built real-time monitoring dashboards using Python to track crawler health, proxy rotation, and data quality metrics.',
-        'Reduced data duplication by 35% with BeautifulSoup-powered parsing and Python-based deduplication logic across consumer pipelines.',
-      ],
-    },
-  ],
-
-  // ── Optional ────────────────────────────────────────────────────
-  tagline: 'Building systems that scale & experiences that delight.',
-
-  certifications: [
-    {
-      name: 'AI Appreciate & AI Aware Badge',
-      issuer: 'CBSE and Intel',
-      date: 'AUG 2023',
-      credentialId: '1',
-      url: 'https://ai-for-all.in/#/badge?id=U2FsdGVkX18WAlDeUADw21Cp1L2u3SeUODjPKp1L2u3Soms1L2a3S4hoQC7Ok5U7wbbU4ose6yb1EbaRvuKg',
-    },
-    {
-      name: 'Python  ',
-      issuer: 'Hacker Rank',
-      date: '28 JAN 2024',
-      credentialId: '2c150edbd7c5',
-      url: 'https://www.hackerrank.com/certificates/2c150edbd7c5',
-    },
-  ],
-
-  languages: [
-    { language: 'English', proficiency: 'Professional' },
-    { language: 'Hindi', proficiency: 'Fluent' },
-    { language: 'Odia', proficiency: 'Native' },
-  ],
-
-  interests: ['Open Source', 'Competitive Programming', 'Tech Blogging'],
-
-  openToWork: true,
-  availableFrom: 'Immediately',
-};

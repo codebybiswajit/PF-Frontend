@@ -46,6 +46,11 @@ export const authApi = {
     const res = await api.get<{ user: User }>(`/users/public/${slug}`);
     return res.data;
   },
+
+  getPublicUserById: async (id: string): Promise<{ user: User }> => {
+    const res = await api.get<{ user: User }>(`/users/${id}/resume`);
+    return res.data;
+  },
 };
 
 export default api;

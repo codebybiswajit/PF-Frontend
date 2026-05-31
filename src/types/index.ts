@@ -1,24 +1,36 @@
 export interface Education {
   degree: string;
+  field?: string;
   institution: string;
+  location?: string;
   start: string;
   end: string;
   gpa?: string;
+  honors?: string;
+  courses?: string[];
 }
 
 export interface Experience {
   title: string;
   company: string;
+  location?: string;
+  type?: string;
   start: string;
   end: string;
-  desc: string;
+  desc?: string;
+  summary?: string;
+  bullets?: string[];
+  tech?: string[];
 }
 
 export interface Project {
   name: string;
-  tech: string;
+  tagline?: string;
+  tech: string | string[];
   desc: string;
   url?: string;
+  repo?: string;
+  highlights?: string[];
 }
 
 export interface User {
@@ -30,12 +42,26 @@ export interface User {
   phone?: string;
   linkedin?: string;
   github?: string;
+  twitter?: string;
+  location?: string;
+  website?: string;
   skills?: string;
   summary?: string;
   education: Education[];
   experience: Experience[];
   projects: Project[];
   portfolioSlug?: string;
+
+  // Rich resume fields
+  tagline?: string;
+  profilePhoto?: string;
+  contact?: ResumeContact;
+  skillGroups?: ResumeSkillGroup[];
+  certifications?: ResumeCertification[];
+  languages?: ResumeLanguage[];
+  interests?: string[];
+  openToWork?: boolean;
+  availableFrom?: string;
 }
 
 export interface AuthResponse {

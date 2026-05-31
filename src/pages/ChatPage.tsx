@@ -315,7 +315,7 @@ const ChatPage: React.FC = () => {
   }
 
   return (
-    <div className="chat-wrap">
+    <div className="chat-wrap" >
 
       {/* ── Header ── */}
       <div className="d-flex align-items-start justify-content-between mb-3 flex-wrap gap-2">

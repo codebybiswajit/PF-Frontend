@@ -1,12 +1,13 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { FiSun, FiMoon } from 'react-icons/fi';
+import { FiSun, FiMoon, FiSettings } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 import ProfileModal from './ProfileModal';
+import SettingsSidebar from './SettingsSidebar';
 import { applyThemeAndAccent } from '../utils/theme';
 import { usePublicPortfolio } from '../context/PublicPortfolioContext';
-import { getInitials } from '../pages/AboutPage';
+import { getInitials } from '../utils/helpers';
 const Navbar = () => {
   const { user, logout } = useAuth();
   const { publicUser, clearPublicUser } = usePublicPortfolio();
@@ -15,8 +16,13 @@ const Navbar = () => {
   const [theme, setTheme] = useState(localStorage.getItem('portfolio_theme') || 'dark');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarTab, setSidebarTab] = useState<'profile' | 'personalize'>('profile');
 
-  const isAuthenticated = !!user && !publicUser; // treat as unauthenticated inside public view for guest simplicity
+  // isAuthenticated: user is logged in AND not viewing someone else's public portfolio
+  const isAuthenticated = !!user && !publicUser;
+  // isLoggedInOnPublicView: user is logged in BUT viewing a public portfolio
+  const isLoggedInOnPublicView = !!user && !!publicUser;
   const closeNav = useCallback(() => setNavOpen(false), []);
 
   const navTitle = user
@@ -41,6 +47,7 @@ const Navbar = () => {
     logout();
     closeNav();
     navigate('/');
+    window.location.reload();
     toast.success('Signed out successfully!', { autoClose: 2000 });
   }, [logout, navigate, closeNav]);
 
@@ -176,7 +183,7 @@ const Navbar = () => {
                   About
                 </NavLink>
               </li>
-              {!isAuthenticated && <li className="nav-item">
+              {<li className="nav-item">
                 <NavLink
                   to="/my-resume"
                   className={({ isActive }) => `nav-link pf-nav-link${isActive ? ' active' : ''}`}
@@ -185,7 +192,7 @@ const Navbar = () => {
                   Resume
                 </NavLink>
               </li>}
-              {/* AI Chat — accessible but limited for guests */}
+              {/* AI Chat — public local pattern-matching for guests, full LLM for logged-in */}
               <li className="nav-item">
                 <NavLink
                   to="/chat"
@@ -214,55 +221,52 @@ const Navbar = () => {
                   <div className="profile-chip-wrapper">
                     <button
                       className="profile-chip"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDropdownOpen(o => !o);
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        handleSignOut();
                       }}
+                      style={{ color: 'var(--neon2)' }}
                       type="button"
                     >
-                      <div className="avatar">{userInitials}</div>
-                      <span className="d-none d-sm-inline">{user.firstName}</span>
+                      Sign Out
                     </button>
-
-                    {/* Profile Dropdown */}
-                    {dropdownOpen && (
-                      <div className="pf-dropdown">
-                        <button
-                          className="dropdown-item-pf"
-                          onClick={() => {
-                            setDropdownOpen(false);
-                            setModalOpen(true);
-                          }}
-                          type="button"
-                        >
-                          ⚙️ Update Profile
-                        </button>
-                        <button
-                          className="dropdown-item-pf"
-                          onClick={() => {
-                            setDropdownOpen(false);
-                            navigate('/my-resume');
-                          }}
-                          type="button"
-                        >
-                          📄 View ATS Resume
-                        </button>
-                        <hr style={{ margin: '0.25rem 0', borderColor: 'var(--border)', opacity: 0.2 }} />
-                        <button
-                          className="dropdown-item-pf"
-                          onClick={() => {
-                            setDropdownOpen(false);
-                            handleSignOut();
-                          }}
-                          style={{ color: 'var(--neon2)' }}
-                          type="button"
-                        >
-                          🚪 Sign Out
-                        </button>
-                      </div>
-                    )}
                   </div>
                 </>
+              ) : isLoggedInOnPublicView ? (
+                /* Logged-in owner viewing a public portfolio — read-only, no edit options */
+                <div className="profile-chip-wrapper">
+                  <button
+                    className="profile-chip"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDropdownOpen(o => !o);
+                    }}
+                    type="button"
+                    title="You are viewing a public portfolio"
+                  >
+                    <div className="avatar" style={{ opacity: 0.7 }}>{userInitials}</div>
+                    <span className="d-none d-sm-inline" style={{ opacity: 0.7 }}>{user!.firstName}</span>
+                  </button>
+                  {dropdownOpen && (
+                    <div className="pf-dropdown">
+                      <div style={{ padding: '0.4rem 0.75rem 0.6rem', fontSize: '0.72rem', color: 'var(--muted)', letterSpacing: '0.5px' }}>
+                        👁️ Viewing public portfolio
+                      </div>
+                      <hr style={{ margin: '0 0 0.25rem', borderColor: 'var(--border)', opacity: 0.2 }} />
+                      <button
+                        className="dropdown-item-pf"
+                        onClick={() => {
+                          setDropdownOpen(false);
+                          handleSignOut();
+                        }}
+                        style={{ color: 'var(--neon2)' }}
+                        type="button"
+                      >
+                        🚪 Sign Out
+                      </button>
+                    </div>
+                  )}
+                </div>
               ) : (
                 <>
                   {/* Resume — protected */}
@@ -294,7 +298,28 @@ const Navbar = () => {
         </div>
 
       </nav>
-      {/* Dynamic Edit Profile Modal */}
+
+      {/* Settings sidebar FAB — always visible for personalization */}
+      <button
+        className="sidebar-fab"
+        onClick={() => setSidebarOpen(true)}
+        aria-label="Open settings"
+        type="button"
+        title="Settings & Personalize"
+      >
+        <FiSettings size={13} />
+        <span className="sidebar-fab-label">Settings</span>
+      </button>
+
+      {/* Settings Sidebar — always available; Profile tab only shown when logged in */}
+      <SettingsSidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        defaultTab={isAuthenticated ? sidebarTab : 'personalize'}
+        readOnly={isLoggedInOnPublicView}
+      />
+
+      {/* Legacy Profile Modal (kept for direct opens) */}
       <ProfileModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
     </>
   );

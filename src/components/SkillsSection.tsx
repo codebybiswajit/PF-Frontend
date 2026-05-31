@@ -64,8 +64,8 @@ const SkillBar: React.FC<{ skill: Skill; animate: boolean }> = ({ skill, animate
 
 const SkillsSection: React.FC = () => {
   const { user } = useAuth();
-  const { publicUser } = usePublicPortfolio();
-  const activeUser = publicUser || user;
+  const { publicUser, founderUser } = usePublicPortfolio();
+  const activeUser = publicUser || user || founderUser;
   const sectionRef = useRef<HTMLDivElement>(null);
   const [animated, setAnimated] = React.useState(false);
 
@@ -91,21 +91,34 @@ const SkillsSection: React.FC = () => {
   }, []);
 
   // Compute dynamic skills list if logged in, fallback to default showcase
-  const userSkillsArray = activeUser?.skills
-    ? activeUser.skills.split(',').map((s) => s.trim()).filter(Boolean)
-    : [];
-
   let skillCategories = DEFAULT_SKILL_CATEGORIES;
 
   if (activeUser) {
-    const allSkills = userSkillsArray.map((skillName, index) => ({
-      name: skillName,
-      level: 80 + (index % 5) * 4 // gorgeous and realistic level variations
-    }));
+    if (activeUser.skillGroups && activeUser.skillGroups.length > 0) {
+      skillCategories = activeUser.skillGroups.map((group) => ({
+        title: group.category,
+        icon: group.icon || '🚀',
+        skills: (group.skills || []).map((skillName, index) => ({
+          name: skillName,
+          level: 90 - (index % 4) * 4 // gorgeous level variations
+        }))
+      }));
+    } else {
+      const userSkillsArray = activeUser.skills
+        ? activeUser.skills.split(',').map((s) => s.trim()).filter(Boolean)
+        : [];
 
-    skillCategories = [
-      { title: 'Technical Skills', icon: '🚀', skills: allSkills }
-    ];
+      if (userSkillsArray.length > 0) {
+        const allSkills = userSkillsArray.map((skillName, index) => ({
+          name: skillName,
+          level: 90 - (index % 4) * 4
+        }));
+
+        skillCategories = [
+          { title: 'Technical Skills', icon: '🚀', skills: allSkills }
+        ];
+      }
+    }
   }
 
   return (

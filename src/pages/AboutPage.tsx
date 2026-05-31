@@ -5,24 +5,25 @@ import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 import { usePublicPortfolio } from '../context/PublicPortfolioContext';
 import { SITE_INFO } from '../data/portfolioData';
-export const getInitials = (first?: string, last?: string) => {
-  const f = first && first.length > 0 ? first.trim().charAt(0) : '';
-  const l = last && last.length > 0 ? last.trim().slice(-1) : '';
-  return `${f}${l}`.toUpperCase();
-};
+import { getInitials } from '../utils/helpers';
+
 const AboutPage: React.FC = () => {
   const { user } = useAuth();
-  const { publicUser } = usePublicPortfolio();
-  const activeUser = publicUser || user;
+  const { publicUser, founderUser } = usePublicPortfolio();
+  const activeUser = publicUser || user || founderUser;
   const navigate = useNavigate();
 
   const handleResume = () => {
     if (user) {
       navigate('/resume');
     } else {
-      toast.info('Please sign in or register first! to view your resume 🔐');
+      toast.info('Please sign in or register first to view your resume! 🔐');
       navigate('/my-resume');
     }
+  };
+
+  const handleChat = () => {
+    navigate('/chat');
   };
 
 
@@ -55,7 +56,7 @@ const AboutPage: React.FC = () => {
                 <button className="btn-neon" onClick={handleResume}>
                   View Resume
                 </button>
-                <button className="btn-pink" onClick={() => navigate('/chat')}>
+                <button className="btn-pink" onClick={handleChat}>
                   Chat With AI
                 </button>
               </div>
@@ -64,7 +65,7 @@ const AboutPage: React.FC = () => {
         </div>
 
         {/* Extra info cards */}
-        {!activeUser && (
+        {!(publicUser || user) && (
           <div className="row g-3 mt-5">
             {[
               { icon: '🎯', title: 'Full Stack', desc: 'Frontend to backend, I own the entire stack — React, Node.js, Python, and everything in between.' },

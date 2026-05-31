@@ -12,11 +12,11 @@ import ProfileModal from '../components/ProfileModal';
 
 const ProjectsPage: React.FC = () => {
   const { user } = useAuth();
-  const { publicUser } = usePublicPortfolio();
-  const activeUser = publicUser || user;
+  const { publicUser, founderUser } = usePublicPortfolio();
+  const activeUser = publicUser || user || founderUser;
   const [selectedProject, setSelectedProject] = useState<PortfolioProject | null>(null);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
-  const [profileModalTab, setProfileModalTab] = useState<'basic' | 'edu-exp' | 'projects'>('basic');
+  const [profileModalTab, setProfileModalTab] = useState<'basic' | 'skills-pref' | 'edu-exp' | 'projects-certs'>('basic');
 
   // Convert user projects to PortfolioProject format for display
   const userProjects: PortfolioProject[] = (activeUser?.projects || [])
@@ -28,9 +28,9 @@ const ProjectsPage: React.FC = () => {
       emoji: '💼',
       badge: publicUser ? `${publicUser.firstName.toUpperCase()}'S PROJECT` : 'MY PROJECT',
       bgClass: 'bg-ecomm',
-      tags: p.tech ? p.tech.split(',').map(t => t.trim()) : [],
+      tags: p.tech ? (Array.isArray(p.tech) ? p.tech : p.tech.split(',').map(t => t.trim())) : [],
       features: [],
-      tech: p.tech ? p.tech.split(',').map(t => t.trim()) : [],
+      tech: p.tech ? (Array.isArray(p.tech) ? p.tech : p.tech.split(',').map(t => t.trim())) : [],
       stack: p.url ? `Live: ${p.url}` : 'Source code available',
       url: p.url,
     }));
@@ -40,7 +40,7 @@ const ProjectsPage: React.FC = () => {
   const projectsToDisplay = showCustomProjects ? userProjects : PORTFOLIO_PROJECTS;
 
   return (
-    <div>
+    <div style={{ marginTop: 20 }}>
       <div className="pf-section">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -74,11 +74,11 @@ const ProjectsPage: React.FC = () => {
                 title="No Projects Found"
                 message="You haven't added any projects to your profile yet. Add your projects to display them dynamically here on your portfolio page and ATS resume!"
               />
-              <button 
-                type="button" 
-                className="btn-pink mt-4" 
+              <button
+                type="button"
+                className="btn-pink mt-4"
                 onClick={() => {
-                  setProfileModalTab('projects');
+                  setProfileModalTab('projects-certs');
                   setProfileModalOpen(true);
                 }}
                 style={{ padding: '0.6rem 1.5rem', fontWeight: 600, fontSize: '0.95rem' }}
@@ -96,9 +96,9 @@ const ProjectsPage: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: i * 0.1 }}
                 >
-                  <ProjectCard 
-                    project={proj} 
-                    onViewDetails={() => setSelectedProject(proj)} 
+                  <ProjectCard
+                    project={proj}
+                    onViewDetails={() => setSelectedProject(proj)}
                   />
                 </motion.div>
               ))}
